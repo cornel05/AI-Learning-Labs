@@ -11,13 +11,16 @@ This repository contains Jupyter notebooks, datasets, and resources for machine 
 
 ---
 
-## 🔍 View Labs (nbviewer)
+## 📄 View Labs & Run Online
 
-| Lab | nbviewer Link |
-|-----|--------------|
-| Regression_with_Single_Perceptron | [View in nbviewer](https://nbviewer.org/github/cornel05/AI-Learning-Labs/blob/main/notebooks/regression_with_single_perceptron.ipynb) |
+| Lab | nbviewer Link | Open in Colab | Launch on Binder |
+|-----|---------------|---------------|------------------|
+| Regression_with_Single_Perceptron | [View in nbviewer](https://nbviewer.org/github/cornel05/AI-Learning-Labs/blob/main/notebooks/regression_with_single_perceptron.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/cornel05/AI-Learning-Labs/blob/main/notebooks/regression_with_single_perceptron.ipynb) | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/cornel05/AI-Learning-Labs/main?urlpath=lab/tree/notebooks/regression_with_single_perceptron.ipynb) |
 
-> nbviewer renders the notebook with all saved outputs for easy reading without downloading.
+> **Tip:** nbviewer renders the notebook with all saved outputs for easy reading without downloading.  
+> **Colab** lets you edit and run the code interactively in the cloud.  
+> **Binder** launches a JupyterLab environment in your browser.
+
 
 ---
 
@@ -39,7 +42,7 @@ git clone https://github.com/cornel05/AI-Learning-Labs.git
 cd AI-Learning-Labs
 pip install -r requirements.txt
 jupyter notebook
-
+```
 
 ---
 
