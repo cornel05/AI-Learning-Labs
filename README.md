@@ -21,18 +21,6 @@ This repository contains Jupyter notebooks, datasets, and resources for machine 
 > **Colab** lets you edit and run the code interactively in the cloud.  
 > **Binder** launches a JupyterLab environment in your browser.
 
-
----
-
-## ▶️ Run Labs Online
-
-**Google Colab**  
-Click below to open in Colab with datasets auto-cloned:
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/<YOUR_USERNAME>/<YOUR_REPO>/blob/main/notebooks/C2_W3_Lab_1_Regression_with_Perceptron.ipynb)
-
-**Binder (JupyterLab in browser)**  
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/<YOUR_USERNAME>/<YOUR_REPO>/main?urlpath=lab/tree/notebooks/C2_W3_Lab_1_Regression_with_Perceptron.ipynb)
-
 ---
 
 ## 📦 Setup Locally
@@ -43,7 +31,6 @@ cd AI-Learning-Labs
 pip install -r requirements.txt
 jupyter notebook
 ```
-
 ---
 
 ## **💡 Usage Tips**
