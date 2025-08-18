@@ -15,7 +15,6 @@ This repository contains Jupyter notebooks, datasets, and resources for machine 
 
 | Lab | nbviewer Link | Open in Colab | Launch on Binder |
 |-----|---------------|---------------|------------------|
-
 | Regression_with_Single_Perceptron | [View in nbviewer](https://nbviewer.org/github/cornel05/AI-Learning-Labs/blob/main/notebooks/regression_with_single_perceptron.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/cornel05/AI-Learning-Labs/blob/main/notebooks/regression_with_single_perceptron.ipynb) | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/cornel05/AI-Learning-Labs/main?urlpath=lab/tree/notebooks/regression_with_single_perceptron.ipynb) |
 | OpenCV_NumPy_Image_Processing | [View in nbviewer](https://nbviewer.org/github/cornel05/AI-Learning-Labs/blob/main/notebooks/opencv_numpy_image_processing.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/cornel05/AI-Learning-Labs/blob/main/notebooks/opencv_numpy_image_processing.ipynb) | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/cornel05/AI-Learning-Labs/main?urlpath=lab/tree/notebooks/opencv_numpy_image_processing.ipynb) |
 > **Tip:** nbviewer renders the notebook with all saved outputs for easy reading without downloading.  
@@ -45,4 +44,4 @@ jupyter notebook
    ```python
    import pandas as pd
    df = pd.read_csv("../data/housing.csv")
-    ```
+   ```
