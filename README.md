@@ -17,6 +17,7 @@ This repository contains Jupyter notebooks, datasets, and resources for AI/ML/DL
 | Lab | nbviewer | Colab | Binder |
 |-----|----------|-------|--------|
 | Regression with Single Perceptron | [View in nbviewer](https://nbviewer.org/github/cornel05/AI-Learning-Labs/blob/main/notebooks/regression/regression_with_single_perceptron/regression_with_single_perceptron.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/cornel05/AI-Learning-Labs/blob/main/notebooks/regression/regression_with_single_perceptron/regression_with_single_perceptron.ipynb) | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/cornel05/AI-Learning-Labs/main?urlpath=lab/tree/notebooks/regression/regression_with_single_perceptron/regression_with_single_perceptron.ipynb) |
+| Diamond Price Prediction | [View in nbviewer](https://nbviewer.org/github/cornel05/AI-Learning-Labs/blob/main/notebooks/regression/diamond_price_prediction/diamond_price_prediction.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/cornel05/AI-Learning-Labs/blob/main/notebooks/regression/diamond_price_prediction/diamond_price_prediction.ipynb) | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/cornel05/AI-Learning-Labs/main?urlpath=lab/tree/notebooks/regression/diamond_price_prediction/diamond_price_prediction.ipynb) |
 
 ---
 
