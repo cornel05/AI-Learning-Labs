@@ -1,5 +1,4 @@
 import streamlit as st
-import matplotlib as plt
 import numpy as np
 from pathlib import Path
 
