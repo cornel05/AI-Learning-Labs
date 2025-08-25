@@ -32,6 +32,7 @@ This repository contains Jupyter notebooks, datasets, and resources for AI/ML/DL
 | Lab | nbviewer | Colab | Binder | App |
 |-----|----------|-------|--------|-----|
 | Optimization Using Newton Method | [View in nbviewer](https://nbviewer.org/github/cornel05/AI-Learning-Labs/blob/main/notebooks/optimization/optimization_using_newton_method/optimization_using_newton_method.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/cornel05/AI-Learning-Labs/blob/main/notebooks/optimization/optimization_using_newton_method/optimization_using_newton_method.ipynb) | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/cornel05/AI-Learning-Labs/main?urlpath=lab/tree/notebooks/optimization/optimization_using_newton_method/optimization_using_newton_method.ipynb) | - |
+| Genetic Algorithm | [View in nbviewer](https://nbviewer.org/github/cornel05/AI-Learning-Labs/blob/main/notebooks/optimization/genetic_algorithm/genetic_algorithm.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/cornel05/AI-Learning-Labs/blob/main/notebooks/optimization/genetic_algorithm/genetic_algorithm.ipynb) | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/cornel05/AI-Learning-Labs/main?urlpath=lab/tree/notebooks/optimization/genetic_algorithm/genetic_algorithm.ipynb) | - |
 
 ---
 
