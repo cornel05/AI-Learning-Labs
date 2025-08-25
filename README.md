@@ -39,6 +39,14 @@ This repository contains Jupyter notebooks, datasets, and resources for AI/ML/DL
 | Lab | nbviewer | Colab | Binder | App |
 |-----|----------|-------|--------|-----|
 | OpenCV - NumPy Image Processing | [View in nbviewer](https://nbviewer.org/github/cornel05/AI-Learning-Labs/blob/main/notebooks/computer_vision/opencv_numpy_image_processing/opencv_numpy_image_processing.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/cornel05/AI-Learning-Labs/blob/main/notebooks/computer_vision/opencv_numpy_image_processing/opencv_numpy_image_processing.ipynb) | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/cornel05/AI-Learning-Labs/main?urlpath=lab/tree/notebooks/computer_vision/opencv_numpy_image_processing/opencv_numpy_image_processing.ipynb) | - |
+
+---
+
+### 🔹 Python Snippets
+| Lab | nbviewer | Colab | Binder | App |
+|-----|----------|-------|--------|-----|
+| Python 1D, 2D List Operations | [View in nbviewer](https://nbviewer.org/github/cornel05/AI-Learning-Labs/blob/main/notebooks/python_snippets/python_1d_2d_list/python_1d_2d_list.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/cornel05/AI-Learning-Labs/blob/main/notebooks/python_snippets/python_1d_2d_list/python_1d_2d_list.ipynb) | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/cornel05/AI-Learning-Labs/main?urlpath=lab/tree/notebooks/python_snippets/python_1d_2d_list/python_1d_2d_list.ipynb) | - |
+| Python - NumPy 1D, 2D, 3D List Operations | [View in nbviewer](https://nbviewer.org/github/cornel05/AI-Learning-Labs/blob/main/notebooks/python_snippets/python_numpy_1d_2d_3d_list/python_numpy_1d_2d_3d_list.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/cornel05/AI-Learning-Labs/blob/main/notebooks/python_snippets/python_numpy_1d_2d_3d_list/python_numpy_1d_2d_3d_list.ipynb) | [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/cornel05/AI-Learning-Labs/main?urlpath=lab/tree/notebooks/python_snippets/python_numpy_1d_2d_3d_list/python_numpy_1d_2d_3d_list.ipynb) | - |
 > **Tip:** nbviewer renders the notebook with all saved outputs for easy reading without downloading.  
 > **Colab** lets you edit and run the code interactively in the cloud.  
 > **Binder** launches a JupyterLab environment in your browser.
