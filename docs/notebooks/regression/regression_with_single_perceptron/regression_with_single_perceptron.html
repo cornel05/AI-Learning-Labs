@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.33">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>regression_with_single_perceptron</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-0eb8da49e265de0b97222c166e3aba96.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+<p><strong>Table of contents</strong><a id="toc0_"></a><br>
+- <a href="#toc1_1_">1 - Simple Linear Regression</a><br>
+- <a href="#toc1_1_1_">- Simple Linear Regression Model</a><br>
+- <a href="#toc1_1_2_">- Neural Network Model with a Single Perceptron and One Input Node</a><br>
+- <a href="#toc1_1_3_">Dataset</a><br>
+- <a href="#toc1_2_">2 - Multiple Linear Regression</a><br>
+- <a href="#toc1_2_1_">- Neural Network Model with a Single Perceptron and Two Input Nodes</a></p>
+<!-- vscode-jupyter-toc-config
+    numbering=false
+    anchor=true
+    flat=false
+    minLevel=1
+    maxLevel=6
+    /vscode-jupyter-toc-config -->
+<!-- THIS CELL WILL BE REPLACED ON TOC UPDATE. DO NOT WRITE YOUR TEXT IN THIS CELL -->
+<p><a name="1"></a> ## <a id="toc1_1_"></a><a href="#toc0_">1 - Simple Linear Regression</a></p>
+<p><a name="1.1"></a> ### <a id="toc1_1_1_"></a><a href="#toc0_">- Simple Linear Regression Model</a></p>
+<p>You can describe a simple linear regression model as</p>
+<p><span class="math display">\[\hat{y} = wx + b,\tag{1}\]</span></p>
+<p>where <span class="math inline">\(\hat{y}\)</span> is a prediction of dependent variable <span class="math inline">\(y\)</span> based on independent variable <span class="math inline">\(x\)</span> using a line equation with the slope <span class="math inline">\(w\)</span> and intercept <span class="math inline">\(b\)</span>.</p>
+<p>Given a set of training data points <span class="math inline">\((x_1, y_1)\)</span>, …, <span class="math inline">\((x_m, y_m)\)</span>, you will find the “best” fitting line - such parameters <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> that the differences between original values <span class="math inline">\(y_i\)</span> and predicted values <span class="math inline">\(\hat{y}_i = wx_i + b\)</span> are minimum.</p>
+<p><a name="1.2"></a> ### <a id="toc1_1_2_"></a><a href="#toc0_">- Neural Network Model with a Single Perceptron and One Input Node</a></p>
+<p>The simplest neural network model that describes the above problem can be realized by using one <strong>perceptron</strong>. The <strong>input</strong> and <strong>output</strong> layers will have one <strong>node</strong> each (<span class="math inline">\(x\)</span> for input and <span class="math inline">\(\hat{y} = z\)</span> for output):</p>
+<p><img src="images/nn_model_linear_regression_simple.png" style="width:400px;"></p>
+<p><strong>Weight</strong> (<span class="math inline">\(w\)</span>) and <strong>bias</strong> (<span class="math inline">\(b\)</span>) are the parameters that will get updated when you <strong>train</strong> the model. They are initialized to some random values or set to 0 and updated as the training progresses.</p>
+<p>For each training example <span class="math inline">\(x^{(i)}\)</span>, the prediction <span class="math inline">\(\hat{y}^{(i)}\)</span> can be calculated as:</p>
+<p><span class="math display">\[\begin{align}
+z^{(i)} &amp;=  w x^{(i)} + b,\\
+\hat{y}^{(i)} &amp;= z^{(i)},
+\tag{2}\end{align}\]</span></p>
+<p>where <span class="math inline">\(i = 1, \dots, m\)</span>.</p>
+<p>You can organise all training examples as a vector <span class="math inline">\(X\)</span> of size (<span class="math inline">\(1 \times m\)</span>) and perform scalar multiplication of <span class="math inline">\(X\)</span> (<span class="math inline">\(1 \times m\)</span>) by a scalar <span class="math inline">\(w\)</span>, adding <span class="math inline">\(b\)</span>, which will be broadcasted to a vector of size (<span class="math inline">\(1 \times m\)</span>):</p>
+<p><span class="math display">\[\begin{align}
+Z &amp;=  w X + b,\\
+\hat{Y} &amp;= Z,
+\tag{3}\end{align}\]</span></p>
+<p>This set of calculations is called <strong>forward propagation</strong>.</p>
+<p>For each training example you can measure the difference between original values <span class="math inline">\(y^{(i)}\)</span> and predicted values <span class="math inline">\(\hat{y}^{(i)}\)</span> with the <strong>loss function</strong> <span class="math inline">\(L\left(w, b\right)  = \frac{1}{2}\left(\hat{y}^{(i)} - y^{(i)}\right)^2\)</span>. Division by <span class="math inline">\(2\)</span> is taken just for scaling purposes, you will see the reason below, calculating partial derivatives. To compare the resulting vector of the predictions <span class="math inline">\(\hat{Y}\)</span> (<span class="math inline">\(1 \times m\)</span>) with the vector <span class="math inline">\(Y\)</span> of original values <span class="math inline">\(y^{(i)}\)</span>, you can take an average of the loss function values for each of the training examples:</p>
+<p><span class="math display">\[\mathcal{L}\left(w, b\right)  = \frac{1}{2m}\sum_{i=1}^{m} \left(\hat{y}^{(i)} - y^{(i)}\right)^2.\tag{4}\]</span></p>
+<p>This function is called the sum of squares <strong>cost function</strong>. The aim is to optimize the cost function during the training, which will minimize the differences between original values <span class="math inline">\(y^{(i)}\)</span> and predicted values <span class="math inline">\(\hat{y}^{(i)}\)</span>.</p>
+<p>When your weights were just initialized with some random values, and no training was done yet, you can’t expect good results. You need to calculate the adjustments for the weight and bias, minimizing the cost function. This process is called <strong>backward propagation</strong>.</p>
+<p>According to the gradient descent algorithm, you can calculate partial derivatives as:</p>
+<p><span class="math display">\[\begin{align}
+\frac{\partial \mathcal{L} }{ \partial w } &amp;=
+\frac{1}{m}\sum_{i=1}^{m} \left(\hat{y}^{(i)} - y^{(i)}\right)x^{(i)},\\
+\frac{\partial \mathcal{L} }{ \partial b } &amp;=
+\frac{1}{m}\sum_{i=1}^{m} \left(\hat{y}^{(i)} - y^{(i)}\right).
+\tag{5}\end{align}\]</span></p>
+<p>You can see how the additional division by <span class="math inline">\(2\)</span> in the equation <span class="math inline">\((4)\)</span> helped to simplify the results of the partial derivatives. Then update the parameters iteratively using the expressions</p>
+<p><span class="math display">\[\begin{align}
+w &amp;= w - \alpha \frac{\partial \mathcal{L} }{ \partial w },\\
+b &amp;= b - \alpha \frac{\partial \mathcal{L} }{ \partial b },
+\tag{6}\end{align}\]</span></p>
+<p>where <span class="math inline">\(\alpha\)</span> is the learning rate. Then repeat the process until the cost function stops decreasing.</p>
+<p>The general <strong>methodology</strong> to build a neural network is to: 1. Define the neural network structure ( # of input units, # of hidden units, etc). 2. Initialize the model’s parameters 3. Loop: - Implement forward propagation (calculate the perceptron output), - Implement backward propagation (to get the required corrections for the parameters), - Update parameters. 4. Make predictions.</p>
+<p>You often build helper functions to compute steps 1-3 and then merge them into one function <code>nn_model()</code>. Once you’ve built <code>nn_model()</code> and learnt the right parameters, you can make predictions on new data.</p>
+<div id="50e28ab7" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Import all the required packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># A library for data manipulation and analysis</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Output of plotting commands is displayed within the Jupyter notebook</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a seed so that the results are consistent accross sessions.</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="dataset" class="level3">
+<h3 class="anchored" data-anchor-id="dataset"><a id="toc1_1_3_"></a><a href="#toc0_">Dataset</a></h3>
+<p>Load the <a href="https://www.kaggle.com/code/devzohaib/simple-linear-regression/notebook">Kaggle dataset</a>, saved in <code>../data/tvmarketing.csv</code>. It has two fields: TV marketing expenses (<code>TV</code>) and sales amount (<code>Sales</code>).</p>
+<div id="92576489" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> <span class="st">'../../data/regression_with_single_perceptron/tvmarketing.csv'</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>adv <span class="op">=</span> pd.read_csv(path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Print some part of the dataset</p>
+<div id="de196402" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>adv.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">TV</th>
+<th data-quarto-table-cell-role="th">Sales</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>230.1</td>
+<td>22.1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>44.5</td>
+<td>10.4</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>17.2</td>
+<td>9.3</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>151.5</td>
+<td>18.5</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>180.8</td>
+<td>12.9</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Plot the data points to see how they are distributed. You can use <code>plt.plot()</code> function from <code>matplotlib.pyplot</code> module.</p>
+<div id="f3fa1ae7" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>adv.plot(x<span class="op">=</span><span class="st">'TV'</span>, y<span class="op">=</span><span class="st">'Sales'</span>, kind<span class="op">=</span><span class="st">'scatter'</span>, c<span class="op">=</span><span class="st">'black'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regression_with_single_perceptron_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Normalize the data by subtracting the mean and dividing by the standard deviation. This will help the model to converge faster during training, and to avoid different units of measurement in the input data.</p>
+<p>Normalized data have mean 0 and standard deviation 1. The following cell performs column-wise normalization of the dataset:</p>
+<div id="90a3c925" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>adv_norm <span class="op">=</span> (adv <span class="op">-</span> np.mean(adv, axis<span class="op">=</span><span class="dv">0</span>)) <span class="op">/</span> np.std(adv, axis<span class="op">=</span><span class="dv">0</span>) <span class="co"># As omitting axis for np.std() is depracated, to avoid error, we must pass axis</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>adv_norm.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">TV</th>
+<th data-quarto-table-cell-role="th">Sales</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>0.969852</td>
+<td>1.552053</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>-1.197376</td>
+<td>-0.696046</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>-1.516155</td>
+<td>-0.907406</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>0.052050</td>
+<td>0.860330</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>0.394182</td>
+<td>-0.215683</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="69eb50f2" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>X_norm <span class="op">=</span> adv_norm[<span class="st">'TV'</span>] <span class="co"># type pd.Series</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>Y_norm <span class="op">=</span> adv_norm[<span class="st">'Sales'</span>] <span class="co"># type pd.Series</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to np.array first to be able to reshape</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>X_norm <span class="op">=</span> np.array(X_norm).reshape(<span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>Y_norm <span class="op">=</span> np.array(Y_norm).reshape(<span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>X_norm.shape, Y_norm.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>((1, 200), (1, 200))</code></pre>
+</div>
+</div>
+<p>Plot the data points to see how they are distributed.</p>
+<div id="d74e2b64" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>adv_norm.plot(x<span class="op">=</span><span class="st">'TV'</span>, y<span class="op">=</span><span class="st">'Sales'</span>, kind<span class="op">=</span><span class="st">'scatter'</span>, c<span class="op">=</span><span class="st">'black'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regression_with_single_perceptron_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="8a2e38b7" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> layer_sizes(X, Y):</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Arguments:</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">    X -- input dataset of shape (input size, number of examples)</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Y -- labels of shape (output size, number of examples)</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">    n_x -- the size of the input layer</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">    n_y -- the size of the output layer</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    n_x, n_y <span class="op">=</span> X.shape[<span class="dv">0</span>], Y.shape[<span class="dv">0</span>]</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (n_x, n_y)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>n_x, n_y <span class="op">=</span> layer_sizes(X_norm, Y_norm)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(n_x, n_y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1 1</code></pre>
+</div>
+</div>
+<div id="bd6932e4" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> initialize_parameters(n_x, n_y):</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">    params -- python dictionary containing your parameters:</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">                    W -- weight matrix of shape (n_y, n_x)</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">                    b -- bias value set as a vector of shape (n_y, 1)</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    W <span class="op">=</span> np.random.randn(n_y, n_x) <span class="op">*</span> <span class="fl">0.01</span> <span class="co"># scales down with std of 0.01 to avoid large computations later on</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> np.zeros((n_y, <span class="dv">1</span>))</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> {<span class="st">"W"</span>: W,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>              <span class="st">"b"</span>: b}</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> params</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>parameters <span class="op">=</span> initialize_parameters(n_x, n_y)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(parameters[<span class="st">"W"</span>], parameters[<span class="st">"b"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[0.01788628]] [[0.]]</code></pre>
+</div>
+</div>
+<p>Implement <code>forward_propagation()</code> following the equation <span class="math inline">\((3)\)</span> in the section <a href="#1.2">1.2</a>: <span class="math display">\[\begin{align}
+Z &amp;=  w X + b\\
+\hat{Y} &amp;= Z,
+\end{align}\]</span></p>
+<div id="644ed925" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> forward_propagation(X, parameters):</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Argument:</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">    X -- input data of size (n_x, m)</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">    parameters -- python dictionary containing your parameters (output of initialization function)</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Y_hat -- The output of size (n_y, m)</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    W <span class="op">=</span> parameters[<span class="st">"W"</span>]</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> parameters[<span class="st">"b"</span>]</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    Y_hat <span class="op">=</span> W <span class="op">@</span> X <span class="op">+</span> b</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Y_hat</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>Y_hat <span class="op">=</span> forward_propagation(X_norm, parameters)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Some element of predicted Y_hat values: "</span>, Y_hat[<span class="dv">0</span>, :<span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Some element of predicted Y_hat values:  [ 0.01734705 -0.02141661 -0.02711838  0.00093098  0.00705046]</code></pre>
+</div>
+</div>
+<p>Your weights were just initialized with some random values, so the model has not been trained yet.</p>
+<p>Define a cost function <span class="math inline">\((4)\)</span> which will be used to train the model:</p>
+<p><span class="math display">\[\mathcal{L}\left(w, b\right)  = \frac{1}{2m}\sum_{i=1}^{m} \left(\hat{y}^{(i)} - y^{(i)}\right)^2\]</span></p>
+<div id="de07608b" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compute_cost(Y_hat, Y):</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Computes the cost function as a sum of squares</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Arguments:</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Y_hat -- The output of the neural network of shape (n_y, number of examples)</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Y -- "true" labels vector of shape (n_y, number of examples)</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">    cost -- sum of squares scaled by 1/(2*number of examples)</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Number of examples</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> Y_hat.shape[<span class="dv">1</span>]</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute cost</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    cost <span class="op">=</span> np.<span class="bu">sum</span>((Y_hat <span class="op">-</span> Y)<span class="op">**</span><span class="dv">2</span>) <span class="op">/</span> (<span class="dv">2</span><span class="op">*</span>m)</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> cost</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"cost = </span><span class="sc">{</span><span class="bu">str</span>(compute_cost(Y_hat, Y_norm))<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>cost = 0.48616887080159704</code></pre>
+</div>
+</div>
+<p>Calculate partial derivatives as shown in <span class="math inline">\((5)\)</span>:</p>
+<p><span class="math display">\[\begin{align}
+\frac{\partial \mathcal{L} }{ \partial w } &amp;=
+\frac{1}{m}\sum_{i=1}^{m} \left(\hat{y}^{(i)} - y^{(i)}\right)x^{(i)},\\
+\frac{\partial \mathcal{L} }{ \partial b } &amp;=
+\frac{1}{m}\sum_{i=1}^{m} \left(\hat{y}^{(i)} - y^{(i)}\right).
+\end{align}\]</span></p>
+<div id="67f16c7c" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> backward_propagation(Y_hat, X, Y):</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Implements the backward propagation, calculating gradients</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Arguments:</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Y_hat -- the output of the neural network of shape (n_y, number of examples)</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">    X -- input data of shape (n_x, number of examples)</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Y -- "true" labels vector of shape (n_y, number of examples)</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co">    grads -- python dictionary containing gradients with respect to different parameters</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> X.shape[<span class="dv">1</span>]</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    dZ <span class="op">=</span> Y_hat <span class="op">-</span> Y</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    dW <span class="op">=</span> <span class="dv">1</span><span class="op">/</span>m <span class="op">*</span> (dZ <span class="op">@</span> X.T)</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    db <span class="op">=</span> <span class="dv">1</span><span class="op">/</span>m <span class="op">*</span> np.<span class="bu">sum</span>(dZ, axis<span class="op">=</span><span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>) <span class="co"># Sum over rows, and do not reduce dimensions. e.g. (n_y,) -&gt; (n_y, 1)</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    grads <span class="op">=</span> {<span class="st">"dW"</span>: dW,</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>             <span class="st">"db"</span>: db}</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grads</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>grads <span class="op">=</span> backward_propagation(Y_hat, X_norm, Y_norm)</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"dW = "</span> <span class="op">+</span> <span class="bu">str</span>(grads[<span class="st">"dW"</span>]))</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"db = "</span> <span class="op">+</span> <span class="bu">str</span>(grads[<span class="st">"db"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>dW = [[-0.76433814]]
+db = [[1.687539e-16]]</code></pre>
+</div>
+</div>
+<p>Update parameters as shown in <span class="math inline">\((6)\)</span>:</p>
+<p><span class="math display">\[\begin{align}
+w &amp;= w - \alpha \frac{\partial \mathcal{L} }{ \partial w },\\
+b &amp;= b - \alpha \frac{\partial \mathcal{L} }{ \partial b }.
+\end{align}\]</span></p>
+<div id="46eae58c" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> update_parameters(parameters, grads, learning_rate<span class="op">=</span><span class="fl">1.2</span>):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Updates parameters using the gradient descent update rule</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Arguments:</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">    parameters -- python dictionary containing parameters </span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">    grads -- python dictionary containing gradients </span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">    learning_rate -- learning rate parameter for gradient descent</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">    parameters -- python dictionary containing updated parameters </span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    W <span class="op">=</span> parameters[<span class="st">"W"</span>] <span class="op">-</span> learning_rate <span class="op">*</span> grads[<span class="st">"dW"</span>]</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> parameters[<span class="st">"b"</span>] <span class="op">-</span> learning_rate <span class="op">*</span> grads[<span class="st">"db"</span>]</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    parameters <span class="op">=</span> {<span class="st">"W"</span>: W,</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"b"</span>: b}</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> parameters</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>updated_params <span class="op">=</span> update_parameters(parameters, grads)</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"W updated = "</span> <span class="op">+</span> <span class="bu">str</span>(updated_params[<span class="st">"W"</span>]))</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"b updated = "</span> <span class="op">+</span> <span class="bu">str</span>(updated_params[<span class="st">"b"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>W updated = [[0.93509205]]
+b updated = [[-2.0250468e-16]]</code></pre>
+</div>
+</div>
+<p>Put everything together in the function <code>nn_model()</code>.</p>
+<div id="0288d2e0" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nn_model(X, Y, num_iterations<span class="op">=</span><span class="dv">10</span>, learning_rate<span class="op">=</span><span class="fl">1.2</span>, print_cost<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Arguments:</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">    X -- dataset of shape (n_x, number of examples)</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Y -- labels of shape (n_y, number of examples)</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="co">    num_iterations -- number of iterations in the loop</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co">    learning_rate -- learning rate parameter for gradient descent</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co">    print_cost -- if True, print the cost every iteration</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co">    parameters -- parameters learnt by the model. They can then be used to make predictions.</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    n_x, n_y <span class="op">=</span> layer_sizes(X, Y)</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    parameters <span class="op">=</span> initialize_parameters(n_x, n_y)</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_iterations):</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Forward propagation. Inputs: "X, parameters". Output: "Y_hat".</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>        Y_hat <span class="op">=</span> forward_propagation(X, parameters)</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Cost function. Inputs: "Y_hat, Y". Output: "cost".</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>        cost <span class="op">=</span> compute_cost(Y_hat, Y)</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Backpropagation. Inputs: "Y_hat, X, Y". Output: "grads".</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>        grads <span class="op">=</span> backward_propagation(Y_hat, X, Y)</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Gradient descent parameter update. Inputs: "parameters, grads, learning_rate". Output: "parameters".</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>        parameters <span class="op">=</span> update_parameters(parameters, grads, learning_rate)</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> print_cost:</span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"Cost after iteration </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>cost<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> parameters    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="4ed68fa2" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>parameters_simple <span class="op">=</span> nn_model(X_norm, Y_norm, num_iterations<span class="op">=</span><span class="dv">30</span>, learning_rate<span class="op">=</span><span class="fl">1.2</span>, print_cost<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"W = "</span> <span class="op">+</span> <span class="bu">str</span>(parameters_simple[<span class="st">"W"</span>]))</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"b = "</span> <span class="op">+</span> <span class="bu">str</span>(parameters_simple[<span class="st">"b"</span>]))</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>W_simple <span class="op">=</span> parameters[<span class="st">"W"</span>]</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>b_simple <span class="op">=</span> parameters[<span class="st">"b"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Cost after iteration 0: 0.49659504037484803
+Cost after iteration 1: 0.20616377720695983
+Cost after iteration 2: 0.1945465266802443
+Cost after iteration 3: 0.1940818366591757
+Cost after iteration 4: 0.19406324905833294
+Cost after iteration 5: 0.19406250555429921
+Cost after iteration 6: 0.19406247581413788
+Cost after iteration 7: 0.19406247462453144
+Cost after iteration 8: 0.19406247457694714
+Cost after iteration 9: 0.1940624745750438
+Cost after iteration 10: 0.19406247457496764
+Cost after iteration 11: 0.19406247457496462
+Cost after iteration 12: 0.19406247457496448
+Cost after iteration 13: 0.19406247457496448
+Cost after iteration 14: 0.19406247457496448
+Cost after iteration 15: 0.19406247457496448
+Cost after iteration 16: 0.19406247457496448
+Cost after iteration 17: 0.19406247457496448
+Cost after iteration 18: 0.19406247457496448
+Cost after iteration 19: 0.19406247457496448
+Cost after iteration 20: 0.19406247457496448
+Cost after iteration 21: 0.19406247457496448
+Cost after iteration 22: 0.19406247457496448
+Cost after iteration 23: 0.19406247457496448
+Cost after iteration 24: 0.19406247457496448
+Cost after iteration 25: 0.19406247457496448
+Cost after iteration 26: 0.19406247457496448
+Cost after iteration 27: 0.19406247457496448
+Cost after iteration 28: 0.19406247457496448
+Cost after iteration 29: 0.19406247457496448
+W = [[0.78222442]]
+b = [[-3.19744231e-16]]</code></pre>
+</div>
+</div>
+<div id="4ef32a3a" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(X, Y, parameters, X_pred):</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    W <span class="op">=</span> parameters[<span class="st">"W"</span>]</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> parameters[<span class="st">"b"</span>]</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Use the same mean and standard deviation of the original training array X.</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co">        Handling of X for normalization:</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co">        - If X is a Pandas Series:</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="co">            np.mean(X) and np.std(X) return scalar values (shape ()), </span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="co">            because a Series is essentially a 1D array of values. </span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="co">            This case typically corresponds to having only one feature column.</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="co">            In this scenario, we store mean and std as scalars and normalize X_pred </span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="co">            using these scalars, then reshape it to (1, len(X_pred)) so that it </span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="co">            matches the expected shape for matrix multiplication with W.</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="co">        - If X is a Pandas DataFrame:</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a><span class="co">            np.mean(X) and np.std(X) return a Pandas Series containing </span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="co">            column-wise means and standard deviations. Converting them to NumPy </span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a><span class="co">            arrays produces a 1D vector of shape (n_features,). </span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a><span class="co">            We reshape them to (n_features, 1) so they can be broadcasted </span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a><span class="co">            correctly during normalization of X_pred. </span></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a><span class="co">            This case typically corresponds to having multiple feature columns.</span></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">isinstance</span>(X, pd.Series):</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>        X_mean <span class="op">=</span> np.mean(X)</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>        X_std <span class="op">=</span> np.std(X)</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>        X_pred_norm <span class="op">=</span> ((X_pred <span class="op">-</span> X_mean) <span class="op">/</span> X_std).reshape((<span class="dv">1</span>, <span class="bu">len</span>(X_pred)))</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>        X_mean <span class="op">=</span> np.array(np.mean(X, axis<span class="op">=</span><span class="dv">0</span>)).reshape((<span class="bu">len</span>(X.axes[<span class="dv">1</span>]), <span class="dv">1</span>))</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>        X_std <span class="op">=</span> np.array(np.std(X, axis<span class="op">=</span><span class="dv">0</span>)).reshape((<span class="bu">len</span>(X.axes[<span class="dv">1</span>]), <span class="dv">1</span>))</span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>        X_pred_norm <span class="op">=</span> (X_pred <span class="op">-</span> X_mean) <span class="op">/</span> X_std</span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make predictions</span></span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>    Y_pred_norm <span class="op">=</span> W <span class="op">@</span> X_pred_norm <span class="op">+</span> b</span>
+<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Convert back using same mean and std of original training Y</span></span>
+<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>    Y_pred <span class="op">=</span> Y_pred_norm <span class="op">*</span> np.std(Y) <span class="op">+</span> np.mean(Y)</span>
+<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Y_pred[<span class="dv">0</span>]</span>
+<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a>X_pred <span class="op">=</span> np.array([<span class="fl">230.1</span>, <span class="fl">44.2</span>, <span class="fl">8.6</span>])</span>
+<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>Y_pred <span class="op">=</span> predict(adv[<span class="st">"TV"</span>], adv[<span class="st">"Sales"</span>], parameters_simple, X_pred)</span>
+<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"TV marketing expenses:</span><span class="ch">\n</span><span class="sc">{</span>X_pred<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Predictions of sales:</span><span class="ch">\n</span><span class="sc">{</span>Y_pred<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>TV marketing expenses:
+[230.1  44.2   8.6]
+Predictions of sales:
+[17.97077451  9.13371306  7.44140866]</code></pre>
+</div>
+</div>
+<div id="fce3d428" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>ax.scatter(adv[<span class="st">"TV"</span>], adv[<span class="st">"Sales"</span>], c<span class="op">=</span><span class="st">"black"</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"$x$"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"$y$"</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>X_line <span class="op">=</span> np.arange(np.<span class="bu">min</span>(adv[<span class="st">"TV"</span>]), np.<span class="bu">max</span>(adv[<span class="st">"TV"</span>])<span class="op">*</span><span class="fl">1.1</span>, <span class="fl">0.1</span>)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>Y_line <span class="op">=</span> predict(adv[<span class="st">"TV"</span>], adv[<span class="st">"Sales"</span>], parameters_simple, X_line)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>ax.plot(X_line, Y_line, <span class="st">"r"</span>)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>ax.plot(X_pred, Y_pred, <span class="st">"bo"</span>) <span class="co"># blue dots</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>plt.plot()</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regression_with_single_perceptron_files/figure-html/cell-18-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><a name="2"></a> ## <a id="toc1_2_"></a><a href="#toc0_">2 - Multiple Linear Regression</a> <a name="2.1"></a> ### <a id="toc1_2_1_"></a><a href="#toc0_">- Neural Network Model with a Single Perceptron and Two Input Nodes</a></p>
+<p>Let’s build a linear regression model for a Kaggle dataset <a href="https://www.kaggle.com/c/house-prices-advanced-regression-techniques">House Prices</a>, saved in a file <code>..data/house_prices_train.csv</code>. You will use two fields - ground living area (<code>GrLivArea</code>, square feet) and rates of the overall quality of material and finish (<code>OverallQual</code>, 1-10) to predict sales price (<code>SalePrice</code>, dollars).</p>
+<div id="15fc8ea6" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> <span class="st">'../../data/regression_with_single_perceptron/house_prices_train.csv'</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="a1ad7399" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>X_multi <span class="op">=</span> df[[<span class="st">'GrLivArea'</span>, <span class="st">'OverallQual'</span>]]</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>Y_multi <span class="op">=</span> df[<span class="st">'SalePrice'</span>]</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>X_multi.shape, Y_multi.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<pre><code>((1460, 2), (1460,))</code></pre>
+</div>
+</div>
+<div id="4fcee08b" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>display(X_multi)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>display(Y_multi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">GrLivArea</th>
+<th data-quarto-table-cell-role="th">OverallQual</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1710</td>
+<td>7</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1262</td>
+<td>6</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1786</td>
+<td>7</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1717</td>
+<td>7</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2198</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1455</td>
+<td>1647</td>
+<td>6</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1456</td>
+<td>2073</td>
+<td>6</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1457</td>
+<td>2340</td>
+<td>7</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1458</td>
+<td>1078</td>
+<td>5</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1459</td>
+<td>1256</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+
+<p>1460 rows × 2 columns</p>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>0       208500
+1       181500
+2       223500
+3       140000
+4       250000
+         ...  
+1455    175000
+1456    210000
+1457    266500
+1458    142125
+1459    147500
+Name: SalePrice, Length: 1460, dtype: int64</code></pre>
+</div>
+</div>
+<div id="b5c7ebcd" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>X_multi_norm <span class="op">=</span> (X_multi <span class="op">-</span> np.mean(X_multi, axis<span class="op">=</span><span class="dv">0</span>)) <span class="op">/</span> np.std(X_multi, axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>Y_multi_norm <span class="op">=</span> (Y_multi <span class="op">-</span> np.mean(Y_multi)) <span class="op">/</span> np.std(Y_multi, axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>X_multi_norm.shape, Y_norm.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<pre><code>((1460, 2), (1, 200))</code></pre>
+</div>
+</div>
+<div id="cd10db67" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>X_multi_norm <span class="op">=</span> np.array(X_multi_norm).T</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>Y_multi_norm <span class="op">=</span> np.array(Y_multi_norm).reshape((<span class="dv">1</span>, <span class="bu">len</span>(Y_multi_norm)))</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>X_norm.shape, Y_multi_norm.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<pre><code>((1, 200), (1, 1460))</code></pre>
+</div>
+</div>
+<div id="5bdd07d1" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(X_multi_norm[:, :<span class="dv">5</span>], Y_multi_norm[<span class="dv">0</span>, :<span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[ 0.37033344 -0.48251191  0.51501256  0.38365915  1.2993257 ]
+ [ 0.65147924 -0.07183611  0.65147924  0.65147924  1.3747946 ]] [ 0.34727322  0.00728832  0.53615372 -0.51528106  0.8698426 ]</code></pre>
+</div>
+</div>
+<div id="2684d374" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>parameters_multi <span class="op">=</span> nn_model(X_multi_norm, Y_multi_norm, num_iterations<span class="op">=</span><span class="dv">100</span>, print_cost<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>W <span class="op">=</span> parameters_multi[<span class="st">"W"</span>]</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> parameters_multi[<span class="st">"b"</span>]</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"W: </span><span class="sc">{</span>parameters_multi[<span class="st">'W'</span>]<span class="sc">}</span><span class="ss"> and b: </span><span class="sc">{</span>parameters_multi[<span class="st">'b'</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Cost after iteration 0: 0.5142195119760039
+Cost after iteration 1: 0.44862664805802294
+Cost after iteration 2: 0.3962236237408893
+Cost after iteration 3: 0.35322650244442194
+Cost after iteration 4: 0.3176388968906906
+Cost after iteration 5: 0.28810227675703015
+Cost after iteration 6: 0.2635663230551014
+Cost after iteration 7: 0.2431787775092655
+Cost after iteration 8: 0.22623677631465744
+Cost after iteration 9: 0.21215762854913936
+Cost after iteration 10: 0.20045746930524147
+Cost after iteration 11: 0.19073428857122826
+Cost after iteration 12: 0.1826540289332285
+Cost after iteration 13: 0.1759390850066516
+Cost after iteration 14: 0.170358759895168
+Cost after iteration 15: 0.1657213378223942
+Cost after iteration 16: 0.16186749718900195
+Cost after iteration 17: 0.15866483686740238
+Cost after iteration 18: 0.1560033274486568
+Cost after iteration 19: 0.1537915311054225
+Cost after iteration 20: 0.1519534601860057
+Cost after iteration 21: 0.15042596661037508
+Cost after iteration 22: 0.14915657237810437
+Cost after iteration 23: 0.14810166665369826
+Cost after iteration 24: 0.1472250074889603
+Cost after iteration 25: 0.14649647670811547
+Cost after iteration 26: 0.14589104517897944
+Cost after iteration 27: 0.14538791292141448
+Cost after iteration 28: 0.14496979451095832
+Cost after iteration 29: 0.1446223252272187
+Cost after iteration 30: 0.14433356754488944
+Cost after iteration 31: 0.1440936010125767
+Cost after iteration 32: 0.14389418142946578
+Cost after iteration 33: 0.1437284576106279
+Cost after iteration 34: 0.1435907360102627
+Cost after iteration 35: 0.14347628511635882
+Cost after iteration 36: 0.1433811728966296
+Cost after iteration 37: 0.14330213171107611
+Cost after iteration 38: 0.1432364460501643
+Cost after iteration 39: 0.14318185924179086
+Cost after iteration 40: 0.1431364959218967
+Cost after iteration 41: 0.14309879760515798
+Cost after iteration 42: 0.14306746914224452
+Cost after iteration 43: 0.14304143422415205
+Cost after iteration 44: 0.1430197984049305
+Cost after iteration 45: 0.1430018183724325
+Cost after iteration 46: 0.1429868764113577
+Cost after iteration 47: 0.14297445918125612
+Cost after iteration 48: 0.14296414008039493
+Cost after iteration 49: 0.142955564589588
+Cost after iteration 50: 0.1429484380924669
+Cost after iteration 51: 0.14294251575375058
+Cost after iteration 52: 0.14293759410777576
+Cost after iteration 53: 0.14293350406830627
+Cost after iteration 54: 0.1429301051194693
+Cost after iteration 55: 0.1429272804882445
+Cost after iteration 56: 0.1429249331326534
+Cost after iteration 57: 0.14292298240782159
+Cost after iteration 58: 0.14292136129537322
+Cost after iteration 59: 0.14292001410097277
+Cost after iteration 60: 0.14291889454091114
+Cost after iteration 61: 0.14291796415199975
+Cost after iteration 62: 0.14291719097014374
+Cost after iteration 63: 0.14291654843219517
+Cost after iteration 64: 0.14291601446335958
+Cost after iteration 65: 0.14291557071880256
+Cost after iteration 66: 0.14291520195340132
+Cost after iteration 67: 0.1429148954979891
+Cost after iteration 68: 0.1429146408240979
+Cost after iteration 69: 0.1429144291822463
+Cost after iteration 70: 0.1429142533013457
+Cost after iteration 71: 0.14291410713889743
+Cost after iteration 72: 0.14291398567339883
+Cost after iteration 73: 0.14291388473182634
+Cost after iteration 74: 0.14291380084626906
+Cost after iteration 75: 0.14291373113478598
+Cost after iteration 76: 0.1429136732023953
+Cost after iteration 77: 0.14291362505879346
+Cost after iteration 78: 0.14291358504997667
+Cost after iteration 79: 0.14291355180141707
+Cost after iteration 80: 0.1429135241708394
+Cost after iteration 81: 0.14291350120897797
+Cost after iteration 82: 0.1429134821269635
+Cost after iteration 83: 0.1429134662692215
+Cost after iteration 84: 0.14291345309094916
+Cost after iteration 85: 0.14291344213939877
+Cost after iteration 86: 0.14291343303832293
+Cost after iteration 87: 0.14291342547504843
+Cost after iteration 88: 0.14291341918973427
+Cost after iteration 89: 0.1429134139664445
+Cost after iteration 90: 0.14291340962572974
+Cost after iteration 91: 0.142913406018462
+Cost after iteration 92: 0.14291340302071137
+Cost after iteration 93: 0.14291340052948823
+Cost after iteration 94: 0.142913398459205
+Cost after iteration 95: 0.14291339673873585
+Cost after iteration 96: 0.14291339530897298
+Cost after iteration 97: 0.14291339412079596
+Cost after iteration 98: 0.14291339313338425
+Cost after iteration 99: 0.1429133923128147
+W: [[0.3694604  0.57181575]] and b: [[1.21181604e-16]]</code></pre>
+</div>
+</div>
+<div id="8e5604ac" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>X_multi_pred <span class="op">=</span> np.array([[<span class="dv">1710</span>, <span class="dv">7</span>], [<span class="dv">1200</span>, <span class="dv">6</span>], [<span class="dv">2200</span>, <span class="dv">8</span>]]).T</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>Y_multi_pred <span class="op">=</span> predict(X_multi, Y_multi, parameters_multi, X_multi_pred)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Ground living area, square feet:</span><span class="ch">\n</span><span class="sc">{</span>X_multi_pred[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Rates of the overall quality of material and finish, 1-10:</span><span class="ch">\n</span><span class="sc">{</span>X_multi_pred[<span class="dv">1</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Predictions of sales price, $:</span><span class="ch">\n</span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(Y_multi_pred)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Ground living area, square feet:
+[1710 1200 2200]
+Rates of the overall quality of material and finish, 1-10:
+[7 6 8]
+Predictions of sales price, $:
+[221371. 160039. 281587.]</code></pre>
+</div>
+</div>
+<div id="5484e954" class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure X_multi and Y_multi exist; if not, load</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    X_multi</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    Y_multi</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">NameError</span>:</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_csv(<span class="st">'../data/house_prices_train.csv'</span>)</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>    X_multi <span class="op">=</span> df[[<span class="st">'GrLivArea'</span>, <span class="st">'OverallQual'</span>]]</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>    Y_multi <span class="op">=</span> df[<span class="st">'SalePrice'</span>]</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure trained parameters are available (no retraining here)</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">'parameters_multi'</span> <span class="kw">not</span> <span class="kw">in</span> <span class="bu">globals</span>():</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">RuntimeError</span>(<span class="st">"Trained parameters 'parameters_multi' not found. Please run the training cell above first."</span>)</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Build prediction grids while fixing the other feature at its mean (original scale)</span></span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> np.linspace(X_multi[<span class="st">'GrLivArea'</span>].<span class="bu">min</span>(), X_multi[<span class="st">'GrLivArea'</span>].<span class="bu">max</span>() <span class="op">*</span> <span class="fl">1.1</span>, <span class="dv">200</span>)</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>x2_fixed <span class="op">=</span> <span class="bu">float</span>(X_multi[<span class="st">'OverallQual'</span>].mean())</span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>X_pred1 <span class="op">=</span> np.vstack([x1, np.full_like(x1, x2_fixed)])  <span class="co"># shape (2, 200)</span></span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>y1 <span class="op">=</span> predict(X_multi, Y_multi, parameters_multi, X_pred1)</span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> np.linspace(X_multi[<span class="st">'OverallQual'</span>].<span class="bu">min</span>(), X_multi[<span class="st">'OverallQual'</span>].<span class="bu">max</span>() <span class="op">*</span> <span class="fl">1.1</span>, <span class="dv">200</span>)</span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a>x1_fixed <span class="op">=</span> <span class="bu">float</span>(X_multi[<span class="st">'GrLivArea'</span>].mean())</span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a>X_pred2 <span class="op">=</span> np.vstack([np.full_like(x2, x1_fixed), x2])  <span class="co"># shape (2, 200)</span></span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a>y2 <span class="op">=</span> predict(X_multi, Y_multi, parameters_multi, X_pred2)</span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">5</span>), sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-28"><a href="#cb42-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Subplot 1: SalePrice vs GrLivArea</span></span>
+<span id="cb42-29"><a href="#cb42-29" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].scatter(X_multi[<span class="st">'GrLivArea'</span>], Y_multi, s<span class="op">=</span><span class="dv">12</span>, alpha<span class="op">=</span><span class="fl">0.6</span>, color<span class="op">=</span><span class="st">'black'</span>, label<span class="op">=</span><span class="st">'Data'</span>)</span>
+<span id="cb42-30"><a href="#cb42-30" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].plot(x1, y1, color<span class="op">=</span><span class="st">'red'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">'Predicted'</span>)</span>
+<span id="cb42-31"><a href="#cb42-31" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_xlabel(<span class="st">'GrLivArea (sq ft)'</span>)</span>
+<span id="cb42-32"><a href="#cb42-32" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">'SalePrice ($)'</span>)</span>
+<span id="cb42-33"><a href="#cb42-33" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">'SalePrice vs GrLivArea'</span>)</span>
+<span id="cb42-34"><a href="#cb42-34" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].legend(loc<span class="op">=</span><span class="st">'best'</span>)</span>
+<span id="cb42-35"><a href="#cb42-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-36"><a href="#cb42-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Subplot 2: SalePrice vs OverallQual</span></span>
+<span id="cb42-37"><a href="#cb42-37" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].scatter(X_multi[<span class="st">'OverallQual'</span>], Y_multi, s<span class="op">=</span><span class="dv">12</span>, alpha<span class="op">=</span><span class="fl">0.6</span>, color<span class="op">=</span><span class="st">'black'</span>, label<span class="op">=</span><span class="st">'Data'</span>)</span>
+<span id="cb42-38"><a href="#cb42-38" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].plot(x2, y2, color<span class="op">=</span><span class="st">'red'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">'Predicted'</span>)</span>
+<span id="cb42-39"><a href="#cb42-39" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">'OverallQual (1-10)'</span>)</span>
+<span id="cb42-40"><a href="#cb42-40" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">'SalePrice vs OverallQual'</span>)</span>
+<span id="cb42-41"><a href="#cb42-41" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].legend(loc<span class="op">=</span><span class="st">'best'</span>)</span>
+<span id="cb42-42"><a href="#cb42-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-43"><a href="#cb42-43" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">'House Prices: Feature-wise Scatter with Predicted Lines'</span>, y<span class="op">=</span><span class="fl">1.02</span>)</span>
+<span id="cb42-44"><a href="#cb42-44" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb42-45"><a href="#cb42-45" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regression_with_single_perceptron_files/figure-html/cell-27-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

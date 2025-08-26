@@ -1,0 +1,2169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.33">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Classification with Perceptron</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-0eb8da49e265de0b97222c166e3aba96.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><a id="toc1_"></a><a href="#toc0_">Classification with Perceptron</a></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>Table of contents</strong><a id="toc0_"></a><br>
+- <a href="#toc1_">Classification with Perceptron</a><br>
+- <a href="#toc1_1_">Packages</a><br>
+- <a href="#toc1_2_">1 - Single Perceptron Neural Network with Activation Function</a><br>
+- <a href="#toc1_2_1_">- Neural Network Structure</a><br>
+- <a href="#toc1_2_2_">- Dataset</a><br>
+- <a href="#toc1_2_3_">- Define Activation Function</a><br>
+- <a href="#toc1_3_">2 - Implementation of the Neural Network Model</a><br>
+- <a href="#toc1_4_">3 - Performance on a Larger Dataset</a></p>
+<!-- vscode-jupyter-toc-config
+    numbering=false
+    anchor=true
+    flat=false
+    minLevel=1
+    maxLevel=6
+    /vscode-jupyter-toc-config -->
+<!-- THIS CELL WILL BE REPLACED ON TOC UPDATE. DO NOT WRITE YOUR TEXT IN THIS CELL -->
+<section id="packages" class="level2">
+<h2 class="anchored" data-anchor-id="packages"><a id="toc1_1_"></a><a href="#toc0_">Packages</a></h2>
+<div id="cell-4" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> colors</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># A function to create a dataset.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> make_blobs </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Output of plotting commands is displayed inline within the Jupyter notebook.</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a seed so that the results are consistent.</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><a name="1"></a> ## <a id="toc1_2_"></a><a href="#toc0_">1 - Single Perceptron Neural Network with Activation Function</a></p>
+<p>You already have constructed and trained a neural network model with one <strong>perceptron</strong>. Here a similar model can be used, but with an activation function. Then a single perceptron basically works as a threshold function.</p>
+<p><a name="1.1"></a> ### <a id="toc1_2_1_"></a><a href="#toc0_">- Neural Network Structure</a></p>
+<p>The neural network components are shown in the following scheme:</p>
+<p><img src="images/nn_model_classification_1_layer.png" style="width:600px;"></p>
+<p>Similarly to the previous lab, the input layer contains two nodes <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span>. Weight vector <span class="math inline">\(W = \begin{bmatrix} w_1 &amp; w_2\end{bmatrix}\)</span> and bias (<span class="math inline">\(b\)</span>) are the parameters to be updated during the model training. First step in the forward propagation is the same as in the previous lab. For every training example <span class="math inline">\(x^{(i)} = \begin{bmatrix} x_1^{(i)} &amp; x_2^{(i)}\end{bmatrix}\)</span>:</p>
+<p><span class="math display">\[z^{(i)} = w_1x_1^{(i)} + w_2x_2^{(i)} + b = Wx^{(i)} + b.\tag{1}\]</span></p>
+<p>But now you cannot take a real number <span class="math inline">\(z^{(i)}\)</span> into the output as you need to perform classification. It could be done with a discrete approach: compare the result with zero, and classify as <span class="math inline">\(0\)</span> (blue) if it is below zero and <span class="math inline">\(1\)</span> (red) if it is above zero. Then define cost function as a percentage of incorrectly identified classes and perform backward propagation.</p>
+<p>This extra step in the forward propagation is actually an application of an <strong>activation function</strong>. It would be possible to implement the discrete approach described above (with unit step function) for this problem, but it turns out that there is a continuous approach that works better and is commonly used in more complicated neural networks. So you will implement it here: single perceptron with sigmoid activation function.</p>
+<p>Sigmoid activation function is defined as</p>
+<p><span class="math display">\[a = \sigma\left(z\right) = \frac{1}{1+e^{-z}}.\tag{2}\]</span></p>
+<p>Then a threshold value of <span class="math inline">\(0.5\)</span> can be used for predictions: <span class="math inline">\(1\)</span> (red) if <span class="math inline">\(a &gt; 0.5\)</span> and <span class="math inline">\(0\)</span> (blue) otherwise. Putting it all together, mathematically the single perceptron neural network with sigmoid activation function can be expressed as:</p>
+<p><span class="math display">\[\begin{align}
+z^{(i)} &amp;=  W x^{(i)} + b,\\
+a^{(i)} &amp;= \sigma\left(z^{(i)}\right).\\\tag{3}
+\end{align}\]</span></p>
+<p>If you have <span class="math inline">\(m\)</span> training examples organised in the columns of (<span class="math inline">\(2 \times m\)</span>) matrix <span class="math inline">\(X\)</span>, you can apply the activation function element-wise. So the model can be written as:</p>
+<p><span class="math display">\[\begin{align}
+Z &amp;=  W X + b,\\
+A &amp;= \sigma\left(Z\right),\\\tag{4}
+\end{align}\]</span></p>
+<p>where <span class="math inline">\(b\)</span> is broadcasted to the vector of a size (<span class="math inline">\(1 \times m\)</span>).</p>
+<p>When dealing with classification problems, the most commonly used cost function is the <strong>log loss</strong>, which is described by the following equation:</p>
+<p><span class="math display">\[\mathcal{L}\left(W, b\right) = \frac{1}{m}\sum_{i=1}^{m} L\left(W, b\right) = \frac{1}{m}\sum_{i=1}^{m}  \large\left(\small -y^{(i)}\log\left(a^{(i)}\right) - (1-y^{(i)})\log\left(1- a^{(i)}\right)  \large  \right) \small,\tag{5}\]</span></p>
+<p>where <span class="math inline">\(y^{(i)} \in \{0,1\}\)</span> are the original labels and <span class="math inline">\(a^{(i)}\)</span> are the continuous output values of the forward propagation step (elements of array <span class="math inline">\(A\)</span>).</p>
+<p>You want to minimize the cost function during the training. To implement gradient descent, calculate partial derivatives using chain rule:</p>
+<p><span class="math display">\[\begin{align}
+\frac{\partial \mathcal{L} }{ \partial w_1 } &amp;=
+\frac{1}{m}\sum_{i=1}^{m} \frac{\partial L }{ \partial a^{(i)}}
+\frac{\partial a^{(i)} }{ \partial z^{(i)}}\frac{\partial z^{(i)} }{ \partial w_1},\\
+\frac{\partial \mathcal{L} }{ \partial w_2 } &amp;=
+\frac{1}{m}\sum_{i=1}^{m} \frac{\partial L }{ \partial a^{(i)}}
+\frac{\partial a^{(i)} }{ \partial z^{(i)}}\frac{\partial z^{(i)} }{ \partial w_2},\tag{6}\\
+\frac{\partial \mathcal{L} }{ \partial b } &amp;=
+\frac{1}{m}\sum_{i=1}^{m} \frac{\partial L }{ \partial a^{(i)}}
+\frac{\partial a^{(i)} }{ \partial z^{(i)}}\frac{\partial z^{(i)} }{ \partial b}.
+\end{align}\]</span></p>
+<p>As discussed in the videos, <span class="math inline">\(\frac{\partial L }{ \partial a^{(i)}}
+\frac{\partial a^{(i)} }{ \partial z^{(i)}} = \left(a^{(i)} - y^{(i)}\right)\)</span>, <span class="math inline">\(\frac{\partial z^{(i)}}{ \partial w_1} = x_1^{(i)}\)</span>, <span class="math inline">\(\frac{\partial z^{(i)}}{ \partial w_2} = x_2^{(i)}\)</span> and <span class="math inline">\(\frac{\partial z^{(i)}}{ \partial b} = 1\)</span>. Then <span class="math inline">\((6)\)</span> can be rewritten as:</p>
+<p><span class="math display">\[\begin{align}
+\frac{\partial \mathcal{L} }{ \partial w_1 } &amp;=
+\frac{1}{m}\sum_{i=1}^{m} \left(a^{(i)} - y^{(i)}\right)x_1^{(i)},\\
+\frac{\partial \mathcal{L} }{ \partial w_2 } &amp;=
+\frac{1}{m}\sum_{i=1}^{m} \left(a^{(i)} - y^{(i)}\right)x_2^{(i)},\tag{7}\\
+\frac{\partial \mathcal{L} }{ \partial b } &amp;=
+\frac{1}{m}\sum_{i=1}^{m} \left(a^{(i)} - y^{(i)}\right).
+\end{align}\]</span></p>
+<p>Note that the obtained expressions <span class="math inline">\((7)\)</span> are exactly the same as in the section <span class="math inline">\(3.2\)</span> of the previous lab, when multiple linear regression model was discussed. Thus, they can be rewritten in a matrix form:</p>
+<p><span class="math display">\[\begin{align}
+\frac{\partial \mathcal{L} }{ \partial W } &amp;=
+\begin{bmatrix} \frac{\partial \mathcal{L} }{ \partial w_1 } &amp;
+\frac{\partial \mathcal{L} }{ \partial w_2 }\end{bmatrix} = \frac{1}{m}\left(A - Y\right)X^T,\\
+\frac{\partial \mathcal{L} }{ \partial b } &amp;= \frac{1}{m}\left(A - Y\right)\mathbf{1}.
+\tag{8}
+\end{align}\]</span></p>
+<p>where <span class="math inline">\(\left(A - Y\right)\)</span> is an array of a shape (<span class="math inline">\(1 \times m\)</span>), <span class="math inline">\(X^T\)</span> is an array of a shape (<span class="math inline">\(m \times 2\)</span>) and <span class="math inline">\(\mathbf{1}\)</span> is just a (<span class="math inline">\(m \times 1\)</span>) vector of ones.</p>
+<p>Then you can update the parameters:</p>
+<p><span class="math display">\[\begin{align}
+W &amp;= W - \alpha \frac{\partial \mathcal{L} }{ \partial W },\\
+b &amp;= b - \alpha \frac{\partial \mathcal{L} }{ \partial b },
+\tag{9}\end{align}\]</span></p>
+<p>where <span class="math inline">\(\alpha\)</span> is the learning rate. Repeat the process in a loop until the cost function stops decreasing.</p>
+<p>Finally, the predictions for some example <span class="math inline">\(x\)</span> can be made taking the output <span class="math inline">\(a\)</span> and calculating <span class="math inline">\(\hat{y}\)</span> as</p>
+<p><span class="math display">\[\hat{y} = \begin{cases}
+1, &amp; \text{if } a \ge 0.5 \\
+0, &amp; \text{otherwise}
+\end{cases}\tag{10}\]</span></p>
+<p><a name="1.2"></a> ### <a id="toc1_2_2_"></a><a href="#toc0_">- Dataset</a></p>
+<p>Let’s get the dataset you will work on. The following code will create <span class="math inline">\(m=30\)</span> data points <span class="math inline">\((x_1, x_2)\)</span>, where <span class="math inline">\(x_1, x_2 \in \{0,1\}\)</span> and save them in the <code>NumPy</code> array <code>X</code> of a shape <span class="math inline">\((2 \times m)\)</span> (in the columns of the array). The labels (<span class="math inline">\(0\)</span>: blue, <span class="math inline">\(1\)</span>: red) will be calculated so that <span class="math inline">\(y = 1\)</span> if <span class="math inline">\(x_1 = 0\)</span> and <span class="math inline">\(x_2 = 1\)</span>, in the rest of the cases <span class="math inline">\(y=0\)</span>. The labels will be saved in the array <code>Y</code> of a shape <span class="math inline">\((1 \times m)\)</span>.</p>
+<div id="cell-16" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">30</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.random.randint(<span class="dv">0</span>, <span class="dv">2</span>, (<span class="dv">2</span>, m))</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> np.logical_and(X[<span class="dv">0</span>] <span class="op">==</span> <span class="dv">0</span>, X[<span class="dv">1</span>] <span class="op">==</span> <span class="dv">1</span>).astype(<span class="bu">int</span>).reshape((<span class="dv">1</span>, m))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Training dataset X containing (x1, x2) coordinates in the columns:'</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(X)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Training dataset Y containing labels of two classes (0: blue, 1: red)'</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(Y)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span> (<span class="st">'The shape of X is: '</span> <span class="op">+</span> <span class="bu">str</span>(X.shape))</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span> (<span class="st">'The shape of Y is: '</span> <span class="op">+</span> <span class="bu">str</span>(Y.shape))</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span> (<span class="st">'I have m = </span><span class="sc">%d</span><span class="st"> training examples!'</span> <span class="op">%</span> (X.shape[<span class="dv">1</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Training dataset X containing (x1, x2) coordinates in the columns:
+[[0 0 1 1 0 0 0 1 1 1 0 1 1 1 0 1 1 0 0 0 0 1 1 0 0 0 1 0 0 0]
+ [0 1 0 1 1 0 1 0 0 1 1 0 0 1 0 1 0 1 1 1 1 0 1 0 0 1 1 1 0 0]]
+Training dataset Y containing labels of two classes (0: blue, 1: red)
+[[0 1 0 0 1 0 1 0 0 0 1 0 0 0 0 0 0 1 1 1 1 0 0 0 0 1 0 1 0 0]]
+The shape of X is: (2, 30)
+The shape of Y is: (1, 30)
+I have m = 30 training examples!</code></pre>
+</div>
+</div>
+<p><a name="1.3"></a> ### <a id="toc1_2_3_"></a><a href="#toc0_">- Define Activation Function</a></p>
+<p>The sigmoid function <span class="math inline">\((2)\)</span> for a variable <span class="math inline">\(z\)</span> can be defined with the following code:</p>
+<div id="cell-18" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sigmoid(z):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span> <span class="op">+</span> np.exp(<span class="op">-</span>z))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"sigmoid(-2) = "</span> <span class="op">+</span> <span class="bu">str</span>(sigmoid(<span class="op">-</span><span class="dv">2</span>)))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"sigmoid(0) = "</span> <span class="op">+</span> <span class="bu">str</span>(sigmoid(<span class="dv">0</span>)))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"sigmoid(3.5) = "</span> <span class="op">+</span> <span class="bu">str</span>(sigmoid(<span class="fl">3.5</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>sigmoid(-2) = 0.11920292202211755
+sigmoid(0) = 0.5
+sigmoid(3.5) = 0.9706877692486436</code></pre>
+</div>
+</div>
+<p>It can be applied to a <code>NumPy</code> array element by element:</p>
+<div id="cell-20" class="cell" data-tags="[&quot;graded&quot;]" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sigmoid(np.array([<span class="op">-</span><span class="dv">2</span>, <span class="dv">0</span>, <span class="fl">3.5</span>])))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[0.11920292 0.5        0.97068777]</code></pre>
+</div>
+</div>
+<p><a name="2"></a> ## <a id="toc1_3_"></a><a href="#toc0_">2 - Implementation of the Neural Network Model</a></p>
+<p>Implementation of the described neural network will be very similar to the <code>regression_with_single_perceptron</code> lab. The differences will be only in the functions <code>forward_propagation</code> and <code>compute_cost</code>!</p>
+<div id="cell-22" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> layer_sizes(X, Y):</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Arguments:</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">    X -- input dataset of shape (input size, number of examples)</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Y -- labels of shape (output size, number of examples)</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">    n_x -- the size of the input layer</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">    n_y -- the size of the output layer</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    n_x <span class="op">=</span> X.shape[<span class="dv">0</span>]</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    n_y <span class="op">=</span> Y.shape[<span class="dv">0</span>]</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (n_x, n_y)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>(n_x, n_y) <span class="op">=</span> layer_sizes(X, Y)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The size of the input layer is: n_x = "</span> <span class="op">+</span> <span class="bu">str</span>(n_x))</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The size of the output layer is: n_y = "</span> <span class="op">+</span> <span class="bu">str</span>(n_y))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The size of the input layer is: n_x = 2
+The size of the output layer is: n_y = 1</code></pre>
+</div>
+</div>
+<div id="cell-23" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> initialize_parameters(n_x, n_y):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">    params -- python dictionary containing your parameters:</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">                    W -- weight matrix of shape (n_y, n_x)</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">                    b -- bias value set as a vector of shape (n_y, 1)</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    W <span class="op">=</span> np.random.randn(n_y, n_x) <span class="op">*</span> <span class="fl">0.01</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> np.zeros((n_y, <span class="dv">1</span>))</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    parameters <span class="op">=</span> {<span class="st">"W"</span>: W,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"b"</span>: b}</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> parameters</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>parameters <span class="op">=</span> initialize_parameters(n_x, n_y)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"W = "</span> <span class="op">+</span> <span class="bu">str</span>(parameters[<span class="st">"W"</span>]))</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"b = "</span> <span class="op">+</span> <span class="bu">str</span>(parameters[<span class="st">"b"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>W = [[-0.00768836 -0.00230031]]
+b = [[0.]]</code></pre>
+</div>
+</div>
+<p>Implement <code>forward_propagation()</code> following the equation <span class="math inline">\((4)\)</span> in the section <a href="#2.1">2.1</a>: <span class="math display">\[\begin{align}
+Z &amp;=  W X + b,\\
+A &amp;= \sigma\left(Z\right).
+\end{align}\]</span></p>
+<div id="cell-25" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> forward_propagation(X, parameters):</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Argument:</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">    X -- input data of size (n_x, m)</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">    parameters -- python dictionary containing your parameters (output of initialization function)</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">    A -- The output</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    W <span class="op">=</span> parameters[<span class="st">"W"</span>]</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> parameters[<span class="st">"b"</span>]</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Forward Propagation to calculate Z.</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    Z <span class="op">=</span> W <span class="op">@</span> X <span class="op">+</span> b</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> sigmoid(Z)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> A</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> forward_propagation(X, parameters)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Output vector A:"</span>, A)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Output vector A: [[0.5        0.49942492 0.49807792 0.49750285 0.49942492 0.5
+  0.49942492 0.49807792 0.49807792 0.49750285 0.49942492 0.49807792
+  0.49807792 0.49750285 0.5        0.49750285 0.49807792 0.49942492
+  0.49942492 0.49942492 0.49942492 0.49807792 0.49750285 0.5
+  0.5        0.49942492 0.49750285 0.49942492 0.5        0.5       ]]</code></pre>
+</div>
+</div>
+<p>Your weights were just initialized with some random values, so the model has not been trained yet.</p>
+<p>Define a cost function <span class="math inline">\((5)\)</span> which will be used to train the model:</p>
+<p><span class="math display">\[\mathcal{L}\left(W, b\right)  = \frac{1}{m}\sum_{i=1}^{m}  \large\left(\small -y^{(i)}\log\left(a^{(i)}\right) - (1-y^{(i)})\log\left(1- a^{(i)}\right)  \large  \right) \small.\]</span></p>
+<div id="cell-27" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compute_cost(A, Y):</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Computes the log loss cost function</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Arguments:</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">    A -- The output of the neural network of shape (n_y, number of examples)</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Y -- "true" labels vector of shape (n_y, number of examples)</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co">    cost -- log loss</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Number of examples.</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> Y.shape[<span class="dv">1</span>]</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute the cost function.</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    logprobs <span class="op">=</span> <span class="op">-</span> (Y <span class="op">*</span> np.log(A)) <span class="op">-</span> (<span class="dv">1</span> <span class="op">-</span> Y) <span class="op">*</span> np.log(<span class="dv">1</span> <span class="op">-</span> A)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    cost <span class="op">=</span> <span class="dv">1</span><span class="op">/</span>m <span class="op">*</span> np.<span class="bu">sum</span>(logprobs)</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> cost</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"cost = "</span> <span class="op">+</span> <span class="bu">str</span>(compute_cost(A, Y)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>cost = 0.6916391611507908</code></pre>
+</div>
+</div>
+<p>Calculate partial derivatives as shown in <span class="math inline">\((8)\)</span>:</p>
+<p><span class="math display">\[\begin{align}
+\frac{\partial \mathcal{L} }{ \partial W } &amp;= \frac{1}{m}\left(A - Y\right)X^T,\\
+\frac{\partial \mathcal{L} }{ \partial b } &amp;= \frac{1}{m}\left(A - Y\right)\mathbf{1}.
+\end{align}\]</span></p>
+<div id="cell-29" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> backward_propagation(A, X, Y):</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Implements the backward propagation, calculating gradients</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Arguments:</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">    A -- the output of the neural network of shape (n_y, number of examples)</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">    X -- input data of shape (n_x, number of examples)</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Y -- "true" labels vector of shape (n_y, number of examples)</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co">    grads -- python dictionary containing gradients with respect to different parameters</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> X.shape[<span class="dv">1</span>]</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Backward propagation: calculate partial derivatives denoted as dW, db for simplicity. </span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    dZ <span class="op">=</span> A <span class="op">-</span> Y</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    dW <span class="op">=</span> <span class="dv">1</span><span class="op">/</span>m <span class="op">*</span> (dZ <span class="op">@</span> X.T)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    db <span class="op">=</span> <span class="dv">1</span><span class="op">/</span>m <span class="op">*</span> np.<span class="bu">sum</span>(dZ, axis <span class="op">=</span> <span class="dv">1</span>, keepdims <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    grads <span class="op">=</span> {<span class="st">"dW"</span>: dW,</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>             <span class="st">"db"</span>: db}</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grads</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>grads <span class="op">=</span> backward_propagation(A, X, Y)</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"dW = "</span> <span class="op">+</span> <span class="bu">str</span>(grads[<span class="st">"dW"</span>]))</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"db = "</span> <span class="op">+</span> <span class="bu">str</span>(grads[<span class="st">"db"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>dW = [[ 0.21571875 -0.06735779]]
+db = [[0.16552706]]</code></pre>
+</div>
+</div>
+<p>Update parameters as shown in <span class="math inline">\((9)\)</span>:</p>
+<p><span class="math display">\[\begin{align}
+W &amp;= W - \alpha \frac{\partial \mathcal{L} }{ \partial W },\\
+b &amp;= b - \alpha \frac{\partial \mathcal{L} }{ \partial b }.\end{align}\]</span></p>
+<div id="cell-31" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> update_parameters(parameters, grads, learning_rate<span class="op">=</span><span class="fl">1.2</span>):</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Updates parameters using the gradient descent update rule</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Arguments:</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co">    parameters -- python dictionary containing parameters </span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">    grads -- python dictionary containing gradients </span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co">    learning_rate -- learning rate parameter for gradient descent</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co">    parameters -- python dictionary containing updated parameters </span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Retrieve each parameter from the dictionary "parameters".</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    W <span class="op">=</span> parameters[<span class="st">"W"</span>]</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> parameters[<span class="st">"b"</span>]</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Retrieve each gradient from the dictionary "grads".</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    dW <span class="op">=</span> grads[<span class="st">"dW"</span>]</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>    db <span class="op">=</span> grads[<span class="st">"db"</span>]</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Update rule for each parameter.</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>    W <span class="op">=</span> W <span class="op">-</span> learning_rate <span class="op">*</span> dW</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> b <span class="op">-</span> learning_rate <span class="op">*</span> db</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>    parameters <span class="op">=</span> {<span class="st">"W"</span>: W,</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"b"</span>: b}</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> parameters</span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>parameters_updated <span class="op">=</span> update_parameters(parameters, grads)</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"W updated = "</span> <span class="op">+</span> <span class="bu">str</span>(parameters_updated[<span class="st">"W"</span>]))</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"b updated = "</span> <span class="op">+</span> <span class="bu">str</span>(parameters_updated[<span class="st">"b"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>W updated = [[-0.26655087  0.07852904]]
+b updated = [[-0.19863247]]</code></pre>
+</div>
+</div>
+<p>Build your neural network model in <code>nn_model()</code>.</p>
+<div id="cell-33" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nn_model(X, Y, num_iterations<span class="op">=</span><span class="dv">10</span>, learning_rate<span class="op">=</span><span class="fl">1.2</span>, print_cost<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Arguments:</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">    X -- dataset of shape (n_x, number of examples)</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Y -- labels of shape (n_y, number of examples)</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="co">    num_iterations -- number of iterations in the loop</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co">    learning_rate -- learning rate parameter for gradient descent</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co">    print_cost -- if True, print the cost every iteration</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co">    parameters -- parameters learnt by the model. They can then be used to make predictions.</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    n_x <span class="op">=</span> layer_sizes(X, Y)[<span class="dv">0</span>]</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    n_y <span class="op">=</span> layer_sizes(X, Y)[<span class="dv">1</span>]</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>    parameters <span class="op">=</span> initialize_parameters(n_x, n_y)</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Loop</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, num_iterations):</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>         </span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Forward propagation. Inputs: "X, parameters". Outputs: "A".</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>        A <span class="op">=</span> forward_propagation(X, parameters)</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Cost function. Inputs: "A, Y". Outputs: "cost".</span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>        cost <span class="op">=</span> compute_cost(A, Y)</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Backpropagation. Inputs: "A, X, Y". Outputs: "grads".</span></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>        grads <span class="op">=</span> backward_propagation(A, X, Y)</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Gradient descent parameter update. Inputs: "parameters, grads, learning_rate". Outputs: "parameters".</span></span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>        parameters <span class="op">=</span> update_parameters(parameters, grads, learning_rate)</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Print the cost every iteration.</span></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> print_cost:</span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span> (<span class="st">"Cost after iteration </span><span class="sc">%i</span><span class="st">: </span><span class="sc">%f</span><span class="st">"</span> <span class="op">%</span>(i, cost))</span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> parameters</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-34" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>parameters <span class="op">=</span> nn_model(X, Y, num_iterations<span class="op">=</span><span class="dv">500</span>, learning_rate<span class="op">=</span><span class="fl">1.2</span>, print_cost<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"W = "</span> <span class="op">+</span> <span class="bu">str</span>(parameters[<span class="st">"W"</span>]))</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"b = "</span> <span class="op">+</span> <span class="bu">str</span>(parameters[<span class="st">"b"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Cost after iteration 0: 0.693480
+Cost after iteration 1: 0.608586
+Cost after iteration 2: 0.554475
+Cost after iteration 3: 0.513124
+Cost after iteration 4: 0.478828
+Cost after iteration 5: 0.449395
+Cost after iteration 6: 0.423719
+Cost after iteration 7: 0.401089
+Cost after iteration 8: 0.380986
+Cost after iteration 9: 0.363002
+Cost after iteration 10: 0.346813
+Cost after iteration 11: 0.332152
+Cost after iteration 12: 0.318805
+Cost after iteration 13: 0.306594
+Cost after iteration 14: 0.295369
+Cost after iteration 15: 0.285010
+Cost after iteration 16: 0.275412
+Cost after iteration 17: 0.266489
+Cost after iteration 18: 0.258167
+Cost after iteration 19: 0.250382
+Cost after iteration 20: 0.243080
+Cost after iteration 21: 0.236215
+Cost after iteration 22: 0.229745
+Cost after iteration 23: 0.223634
+Cost after iteration 24: 0.217853
+Cost after iteration 25: 0.212372
+Cost after iteration 26: 0.207168
+Cost after iteration 27: 0.202219
+Cost after iteration 28: 0.197505
+Cost after iteration 29: 0.193009
+Cost after iteration 30: 0.188716
+Cost after iteration 31: 0.184611
+Cost after iteration 32: 0.180682
+Cost after iteration 33: 0.176917
+Cost after iteration 34: 0.173306
+Cost after iteration 35: 0.169839
+Cost after iteration 36: 0.166507
+Cost after iteration 37: 0.163303
+Cost after iteration 38: 0.160218
+Cost after iteration 39: 0.157246
+Cost after iteration 40: 0.154382
+Cost after iteration 41: 0.151618
+Cost after iteration 42: 0.148950
+Cost after iteration 43: 0.146373
+Cost after iteration 44: 0.143881
+Cost after iteration 45: 0.141471
+Cost after iteration 46: 0.139139
+Cost after iteration 47: 0.136881
+Cost after iteration 48: 0.134694
+Cost after iteration 49: 0.132574
+Cost after iteration 50: 0.130517
+Cost after iteration 51: 0.128522
+Cost after iteration 52: 0.126586
+Cost after iteration 53: 0.124705
+Cost after iteration 54: 0.122878
+Cost after iteration 55: 0.121102
+Cost after iteration 56: 0.119375
+Cost after iteration 57: 0.117696
+Cost after iteration 58: 0.116062
+Cost after iteration 59: 0.114471
+Cost after iteration 60: 0.112922
+Cost after iteration 61: 0.111413
+Cost after iteration 62: 0.109942
+Cost after iteration 63: 0.108509
+Cost after iteration 64: 0.107111
+Cost after iteration 65: 0.105748
+Cost after iteration 66: 0.104418
+Cost after iteration 67: 0.103120
+Cost after iteration 68: 0.101853
+Cost after iteration 69: 0.100616
+Cost after iteration 70: 0.099407
+Cost after iteration 71: 0.098227
+Cost after iteration 72: 0.097073
+Cost after iteration 73: 0.095945
+Cost after iteration 74: 0.094842
+Cost after iteration 75: 0.093763
+Cost after iteration 76: 0.092708
+Cost after iteration 77: 0.091675
+Cost after iteration 78: 0.090665
+Cost after iteration 79: 0.089676
+Cost after iteration 80: 0.088707
+Cost after iteration 81: 0.087759
+Cost after iteration 82: 0.086830
+Cost after iteration 83: 0.085920
+Cost after iteration 84: 0.085028
+Cost after iteration 85: 0.084154
+Cost after iteration 86: 0.083297
+Cost after iteration 87: 0.082457
+Cost after iteration 88: 0.081633
+Cost after iteration 89: 0.080824
+Cost after iteration 90: 0.080032
+Cost after iteration 91: 0.079254
+Cost after iteration 92: 0.078490
+Cost after iteration 93: 0.077741
+Cost after iteration 94: 0.077005
+Cost after iteration 95: 0.076283
+Cost after iteration 96: 0.075574
+Cost after iteration 97: 0.074877
+Cost after iteration 98: 0.074193
+Cost after iteration 99: 0.073521
+Cost after iteration 100: 0.072860
+Cost after iteration 101: 0.072211
+Cost after iteration 102: 0.071573
+Cost after iteration 103: 0.070946
+Cost after iteration 104: 0.070330
+Cost after iteration 105: 0.069723
+Cost after iteration 106: 0.069127
+Cost after iteration 107: 0.068541
+Cost after iteration 108: 0.067964
+Cost after iteration 109: 0.067396
+Cost after iteration 110: 0.066838
+Cost after iteration 111: 0.066288
+Cost after iteration 112: 0.065748
+Cost after iteration 113: 0.065215
+Cost after iteration 114: 0.064691
+Cost after iteration 115: 0.064175
+Cost after iteration 116: 0.063667
+Cost after iteration 117: 0.063167
+Cost after iteration 118: 0.062675
+Cost after iteration 119: 0.062189
+Cost after iteration 120: 0.061711
+Cost after iteration 121: 0.061240
+Cost after iteration 122: 0.060777
+Cost after iteration 123: 0.060319
+Cost after iteration 124: 0.059869
+Cost after iteration 125: 0.059425
+Cost after iteration 126: 0.058987
+Cost after iteration 127: 0.058556
+Cost after iteration 128: 0.058130
+Cost after iteration 129: 0.057711
+Cost after iteration 130: 0.057297
+Cost after iteration 131: 0.056889
+Cost after iteration 132: 0.056487
+Cost after iteration 133: 0.056091
+Cost after iteration 134: 0.055699
+Cost after iteration 135: 0.055313
+Cost after iteration 136: 0.054932
+Cost after iteration 137: 0.054556
+Cost after iteration 138: 0.054186
+Cost after iteration 139: 0.053820
+Cost after iteration 140: 0.053458
+Cost after iteration 141: 0.053102
+Cost after iteration 142: 0.052750
+Cost after iteration 143: 0.052403
+Cost after iteration 144: 0.052060
+Cost after iteration 145: 0.051721
+Cost after iteration 146: 0.051387
+Cost after iteration 147: 0.051057
+Cost after iteration 148: 0.050731
+Cost after iteration 149: 0.050409
+Cost after iteration 150: 0.050091
+Cost after iteration 151: 0.049776
+Cost after iteration 152: 0.049466
+Cost after iteration 153: 0.049160
+Cost after iteration 154: 0.048857
+Cost after iteration 155: 0.048557
+Cost after iteration 156: 0.048262
+Cost after iteration 157: 0.047969
+Cost after iteration 158: 0.047681
+Cost after iteration 159: 0.047395
+Cost after iteration 160: 0.047113
+Cost after iteration 161: 0.046834
+Cost after iteration 162: 0.046559
+Cost after iteration 163: 0.046286
+Cost after iteration 164: 0.046017
+Cost after iteration 165: 0.045750
+Cost after iteration 166: 0.045487
+Cost after iteration 167: 0.045227
+Cost after iteration 168: 0.044969
+Cost after iteration 169: 0.044714
+Cost after iteration 170: 0.044463
+Cost after iteration 171: 0.044213
+Cost after iteration 172: 0.043967
+Cost after iteration 173: 0.043723
+Cost after iteration 174: 0.043482
+Cost after iteration 175: 0.043244
+Cost after iteration 176: 0.043008
+Cost after iteration 177: 0.042774
+Cost after iteration 178: 0.042543
+Cost after iteration 179: 0.042315
+Cost after iteration 180: 0.042089
+Cost after iteration 181: 0.041865
+Cost after iteration 182: 0.041643
+Cost after iteration 183: 0.041424
+Cost after iteration 184: 0.041207
+Cost after iteration 185: 0.040992
+Cost after iteration 186: 0.040780
+Cost after iteration 187: 0.040569
+Cost after iteration 188: 0.040361
+Cost after iteration 189: 0.040155
+Cost after iteration 190: 0.039950
+Cost after iteration 191: 0.039748
+Cost after iteration 192: 0.039548
+Cost after iteration 193: 0.039350
+Cost after iteration 194: 0.039154
+Cost after iteration 195: 0.038959
+Cost after iteration 196: 0.038767
+Cost after iteration 197: 0.038576
+Cost after iteration 198: 0.038387
+Cost after iteration 199: 0.038200
+Cost after iteration 200: 0.038015
+Cost after iteration 201: 0.037832
+Cost after iteration 202: 0.037650
+Cost after iteration 203: 0.037470
+Cost after iteration 204: 0.037291
+Cost after iteration 205: 0.037115
+Cost after iteration 206: 0.036940
+Cost after iteration 207: 0.036766
+Cost after iteration 208: 0.036594
+Cost after iteration 209: 0.036424
+Cost after iteration 210: 0.036255
+Cost after iteration 211: 0.036088
+Cost after iteration 212: 0.035922
+Cost after iteration 213: 0.035758
+Cost after iteration 214: 0.035595
+Cost after iteration 215: 0.035434
+Cost after iteration 216: 0.035274
+Cost after iteration 217: 0.035116
+Cost after iteration 218: 0.034958
+Cost after iteration 219: 0.034803
+Cost after iteration 220: 0.034648
+Cost after iteration 221: 0.034495
+Cost after iteration 222: 0.034344
+Cost after iteration 223: 0.034193
+Cost after iteration 224: 0.034044
+Cost after iteration 225: 0.033896
+Cost after iteration 226: 0.033750
+Cost after iteration 227: 0.033604
+Cost after iteration 228: 0.033460
+Cost after iteration 229: 0.033317
+Cost after iteration 230: 0.033176
+Cost after iteration 231: 0.033035
+Cost after iteration 232: 0.032896
+Cost after iteration 233: 0.032757
+Cost after iteration 234: 0.032620
+Cost after iteration 235: 0.032484
+Cost after iteration 236: 0.032349
+Cost after iteration 237: 0.032216
+Cost after iteration 238: 0.032083
+Cost after iteration 239: 0.031951
+Cost after iteration 240: 0.031821
+Cost after iteration 241: 0.031691
+Cost after iteration 242: 0.031563
+Cost after iteration 243: 0.031435
+Cost after iteration 244: 0.031309
+Cost after iteration 245: 0.031183
+Cost after iteration 246: 0.031059
+Cost after iteration 247: 0.030935
+Cost after iteration 248: 0.030813
+Cost after iteration 249: 0.030691
+Cost after iteration 250: 0.030571
+Cost after iteration 251: 0.030451
+Cost after iteration 252: 0.030332
+Cost after iteration 253: 0.030214
+Cost after iteration 254: 0.030097
+Cost after iteration 255: 0.029981
+Cost after iteration 256: 0.029866
+Cost after iteration 257: 0.029752
+Cost after iteration 258: 0.029638
+Cost after iteration 259: 0.029525
+Cost after iteration 260: 0.029414
+Cost after iteration 261: 0.029303
+Cost after iteration 262: 0.029192
+Cost after iteration 263: 0.029083
+Cost after iteration 264: 0.028974
+Cost after iteration 265: 0.028867
+Cost after iteration 266: 0.028760
+Cost after iteration 267: 0.028654
+Cost after iteration 268: 0.028548
+Cost after iteration 269: 0.028443
+Cost after iteration 270: 0.028340
+Cost after iteration 271: 0.028236
+Cost after iteration 272: 0.028134
+Cost after iteration 273: 0.028032
+Cost after iteration 274: 0.027931
+Cost after iteration 275: 0.027831
+Cost after iteration 276: 0.027731
+Cost after iteration 277: 0.027633
+Cost after iteration 278: 0.027534
+Cost after iteration 279: 0.027437
+Cost after iteration 280: 0.027340
+Cost after iteration 281: 0.027244
+Cost after iteration 282: 0.027148
+Cost after iteration 283: 0.027054
+Cost after iteration 284: 0.026959
+Cost after iteration 285: 0.026866
+Cost after iteration 286: 0.026773
+Cost after iteration 287: 0.026681
+Cost after iteration 288: 0.026589
+Cost after iteration 289: 0.026498
+Cost after iteration 290: 0.026408
+Cost after iteration 291: 0.026318
+Cost after iteration 292: 0.026229
+Cost after iteration 293: 0.026140
+Cost after iteration 294: 0.026052
+Cost after iteration 295: 0.025965
+Cost after iteration 296: 0.025878
+Cost after iteration 297: 0.025792
+Cost after iteration 298: 0.025706
+Cost after iteration 299: 0.025621
+Cost after iteration 300: 0.025536
+Cost after iteration 301: 0.025452
+Cost after iteration 302: 0.025368
+Cost after iteration 303: 0.025285
+Cost after iteration 304: 0.025203
+Cost after iteration 305: 0.025121
+Cost after iteration 306: 0.025040
+Cost after iteration 307: 0.024959
+Cost after iteration 308: 0.024878
+Cost after iteration 309: 0.024799
+Cost after iteration 310: 0.024719
+Cost after iteration 311: 0.024640
+Cost after iteration 312: 0.024562
+Cost after iteration 313: 0.024484
+Cost after iteration 314: 0.024407
+Cost after iteration 315: 0.024330
+Cost after iteration 316: 0.024253
+Cost after iteration 317: 0.024178
+Cost after iteration 318: 0.024102
+Cost after iteration 319: 0.024027
+Cost after iteration 320: 0.023952
+Cost after iteration 321: 0.023878
+Cost after iteration 322: 0.023805
+Cost after iteration 323: 0.023732
+Cost after iteration 324: 0.023659
+Cost after iteration 325: 0.023586
+Cost after iteration 326: 0.023515
+Cost after iteration 327: 0.023443
+Cost after iteration 328: 0.023372
+Cost after iteration 329: 0.023301
+Cost after iteration 330: 0.023231
+Cost after iteration 331: 0.023161
+Cost after iteration 332: 0.023092
+Cost after iteration 333: 0.023023
+Cost after iteration 334: 0.022955
+Cost after iteration 335: 0.022886
+Cost after iteration 336: 0.022819
+Cost after iteration 337: 0.022751
+Cost after iteration 338: 0.022684
+Cost after iteration 339: 0.022618
+Cost after iteration 340: 0.022552
+Cost after iteration 341: 0.022486
+Cost after iteration 342: 0.022420
+Cost after iteration 343: 0.022355
+Cost after iteration 344: 0.022291
+Cost after iteration 345: 0.022226
+Cost after iteration 346: 0.022162
+Cost after iteration 347: 0.022099
+Cost after iteration 348: 0.022036
+Cost after iteration 349: 0.021973
+Cost after iteration 350: 0.021910
+Cost after iteration 351: 0.021848
+Cost after iteration 352: 0.021786
+Cost after iteration 353: 0.021725
+Cost after iteration 354: 0.021664
+Cost after iteration 355: 0.021603
+Cost after iteration 356: 0.021542
+Cost after iteration 357: 0.021482
+Cost after iteration 358: 0.021422
+Cost after iteration 359: 0.021363
+Cost after iteration 360: 0.021304
+Cost after iteration 361: 0.021245
+Cost after iteration 362: 0.021186
+Cost after iteration 363: 0.021128
+Cost after iteration 364: 0.021070
+Cost after iteration 365: 0.021013
+Cost after iteration 366: 0.020956
+Cost after iteration 367: 0.020899
+Cost after iteration 368: 0.020842
+Cost after iteration 369: 0.020786
+Cost after iteration 370: 0.020730
+Cost after iteration 371: 0.020674
+Cost after iteration 372: 0.020618
+Cost after iteration 373: 0.020563
+Cost after iteration 374: 0.020508
+Cost after iteration 375: 0.020454
+Cost after iteration 376: 0.020400
+Cost after iteration 377: 0.020346
+Cost after iteration 378: 0.020292
+Cost after iteration 379: 0.020238
+Cost after iteration 380: 0.020185
+Cost after iteration 381: 0.020132
+Cost after iteration 382: 0.020080
+Cost after iteration 383: 0.020028
+Cost after iteration 384: 0.019975
+Cost after iteration 385: 0.019924
+Cost after iteration 386: 0.019872
+Cost after iteration 387: 0.019821
+Cost after iteration 388: 0.019770
+Cost after iteration 389: 0.019719
+Cost after iteration 390: 0.019669
+Cost after iteration 391: 0.019618
+Cost after iteration 392: 0.019568
+Cost after iteration 393: 0.019519
+Cost after iteration 394: 0.019469
+Cost after iteration 395: 0.019420
+Cost after iteration 396: 0.019371
+Cost after iteration 397: 0.019322
+Cost after iteration 398: 0.019274
+Cost after iteration 399: 0.019225
+Cost after iteration 400: 0.019177
+Cost after iteration 401: 0.019129
+Cost after iteration 402: 0.019082
+Cost after iteration 403: 0.019035
+Cost after iteration 404: 0.018988
+Cost after iteration 405: 0.018941
+Cost after iteration 406: 0.018894
+Cost after iteration 407: 0.018848
+Cost after iteration 408: 0.018801
+Cost after iteration 409: 0.018755
+Cost after iteration 410: 0.018710
+Cost after iteration 411: 0.018664
+Cost after iteration 412: 0.018619
+Cost after iteration 413: 0.018574
+Cost after iteration 414: 0.018529
+Cost after iteration 415: 0.018484
+Cost after iteration 416: 0.018440
+Cost after iteration 417: 0.018396
+Cost after iteration 418: 0.018352
+Cost after iteration 419: 0.018308
+Cost after iteration 420: 0.018264
+Cost after iteration 421: 0.018221
+Cost after iteration 422: 0.018178
+Cost after iteration 423: 0.018135
+Cost after iteration 424: 0.018092
+Cost after iteration 425: 0.018049
+Cost after iteration 426: 0.018007
+Cost after iteration 427: 0.017965
+Cost after iteration 428: 0.017923
+Cost after iteration 429: 0.017881
+Cost after iteration 430: 0.017839
+Cost after iteration 431: 0.017798
+Cost after iteration 432: 0.017756
+Cost after iteration 433: 0.017715
+Cost after iteration 434: 0.017675
+Cost after iteration 435: 0.017634
+Cost after iteration 436: 0.017593
+Cost after iteration 437: 0.017553
+Cost after iteration 438: 0.017513
+Cost after iteration 439: 0.017473
+Cost after iteration 440: 0.017433
+Cost after iteration 441: 0.017394
+Cost after iteration 442: 0.017354
+Cost after iteration 443: 0.017315
+Cost after iteration 444: 0.017276
+Cost after iteration 445: 0.017237
+Cost after iteration 446: 0.017198
+Cost after iteration 447: 0.017160
+Cost after iteration 448: 0.017121
+Cost after iteration 449: 0.017083
+Cost after iteration 450: 0.017045
+Cost after iteration 451: 0.017007
+Cost after iteration 452: 0.016970
+Cost after iteration 453: 0.016932
+Cost after iteration 454: 0.016895
+Cost after iteration 455: 0.016858
+Cost after iteration 456: 0.016821
+Cost after iteration 457: 0.016784
+Cost after iteration 458: 0.016747
+Cost after iteration 459: 0.016710
+Cost after iteration 460: 0.016674
+Cost after iteration 461: 0.016638
+Cost after iteration 462: 0.016602
+Cost after iteration 463: 0.016566
+Cost after iteration 464: 0.016530
+Cost after iteration 465: 0.016494
+Cost after iteration 466: 0.016459
+Cost after iteration 467: 0.016423
+Cost after iteration 468: 0.016388
+Cost after iteration 469: 0.016353
+Cost after iteration 470: 0.016318
+Cost after iteration 471: 0.016284
+Cost after iteration 472: 0.016249
+Cost after iteration 473: 0.016215
+Cost after iteration 474: 0.016180
+Cost after iteration 475: 0.016146
+Cost after iteration 476: 0.016112
+Cost after iteration 477: 0.016078
+Cost after iteration 478: 0.016045
+Cost after iteration 479: 0.016011
+Cost after iteration 480: 0.015977
+Cost after iteration 481: 0.015944
+Cost after iteration 482: 0.015911
+Cost after iteration 483: 0.015878
+Cost after iteration 484: 0.015845
+Cost after iteration 485: 0.015812
+Cost after iteration 486: 0.015780
+Cost after iteration 487: 0.015747
+Cost after iteration 488: 0.015715
+Cost after iteration 489: 0.015683
+Cost after iteration 490: 0.015650
+Cost after iteration 491: 0.015618
+Cost after iteration 492: 0.015587
+Cost after iteration 493: 0.015555
+Cost after iteration 494: 0.015523
+Cost after iteration 495: 0.015492
+Cost after iteration 496: 0.015460
+Cost after iteration 497: 0.015429
+Cost after iteration 498: 0.015398
+Cost after iteration 499: 0.015367
+W = [[-7.94930555  7.68597905]]
+b = [[-3.80585979]]</code></pre>
+</div>
+</div>
+<div id="cell-35" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_decision_boundary(X, Y, parameters):</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    W <span class="op">=</span> parameters[<span class="st">"W"</span>]</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> parameters[<span class="st">"b"</span>]</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    plt.scatter(X[<span class="dv">0</span>, :], X[<span class="dv">1</span>, :], c<span class="op">=</span>Y, cmap<span class="op">=</span>colors.ListedColormap([<span class="st">'blue'</span>, <span class="st">'red'</span>]))<span class="op">;</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    x_line <span class="op">=</span> np.arange(np.<span class="bu">min</span>(X[<span class="dv">0</span>,:]),np.<span class="bu">max</span>(X[<span class="dv">0</span>,:])<span class="op">*</span><span class="fl">1.1</span>, <span class="fl">0.1</span>)</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    ax.plot(x_line, <span class="op">-</span> W[<span class="dv">0</span>,<span class="dv">0</span>] <span class="op">/</span> W[<span class="dv">0</span>,<span class="dv">1</span>] <span class="op">*</span> x_line <span class="op">+</span> <span class="op">-</span>b[<span class="dv">0</span>,<span class="dv">0</span>] <span class="op">/</span> W[<span class="dv">0</span>,<span class="dv">1</span>] , color<span class="op">=</span><span class="st">"black"</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    plt.plot()</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>plot_decision_boundary(X, Y, parameters)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="classification_with_single_perceptron_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-36" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(X, parameters):</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Using the learned parameters, predicts a class for each example in X</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Arguments:</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="co">    parameters -- python dictionary containing your parameters </span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co">    X -- input data of size (n_x, m)</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="co">    predictions -- vector of predictions of our model (blue: False / red: True)</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Computes probabilities using forward propagation, and classifies to 0/1 using 0.5 as the threshold.</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> forward_propagation(X, parameters)</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    predictions <span class="op">=</span> A <span class="op">&gt;</span> <span class="fl">0.5</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> predictions</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>X_pred <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>],</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>                   [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>]])</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>Y_pred <span class="op">=</span> predict(X_pred, parameters)</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Coordinates (in the columns):</span><span class="ch">\n</span><span class="sc">{</span>X_pred<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Predictions:</span><span class="ch">\n</span><span class="sc">{</span>Y_pred<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinates (in the columns):
+[[1 1 0 0]
+ [0 1 0 1]]
+Predictions:
+[[False False False  True]]</code></pre>
+</div>
+</div>
+<p><a name="3"></a> ## <a id="toc1_4_"></a><a href="#toc0_">3 - Performance on a Larger Dataset</a></p>
+<p>Construct a larger and more complex dataset with the function <code>make_blobs</code> from the <code>sklearn.datasets</code> library:</p>
+<div id="cell-38" class="cell" data-scrolled="false" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dataset</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>n_samples <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>samples, labels <span class="op">=</span> make_blobs(n_samples<span class="op">=</span>n_samples, </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>                             centers<span class="op">=</span>([<span class="fl">2.5</span>, <span class="dv">3</span>], [<span class="fl">6.7</span>, <span class="fl">7.9</span>]), </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                             cluster_std<span class="op">=</span><span class="fl">1.4</span>,</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>                             random_state<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>X_larger <span class="op">=</span> np.transpose(samples)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>Y_larger <span class="op">=</span> labels.reshape((<span class="dv">1</span>,n_samples))</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>plt.scatter(X_larger[<span class="dv">0</span>, :], X_larger[<span class="dv">1</span>, :], c<span class="op">=</span>Y_larger, cmap<span class="op">=</span>colors.ListedColormap([<span class="st">'blue'</span>, <span class="st">'red'</span>]))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="classification_with_single_perceptron_files/figure-html/cell-16-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And train your neural network for <span class="math inline">\(600\)</span> iterations.</p>
+<div id="cell-40" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>parameters_larger <span class="op">=</span> nn_model(X_larger, Y_larger, num_iterations<span class="op">=</span><span class="dv">600</span>, learning_rate<span class="op">=</span><span class="fl">0.1</span>, print_cost<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"W = "</span> <span class="op">+</span> <span class="bu">str</span>(parameters_larger[<span class="st">"W"</span>]))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"b = "</span> <span class="op">+</span> <span class="bu">str</span>(parameters_larger[<span class="st">"b"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Cost after iteration 0: 0.715632
+Cost after iteration 1: 0.619924
+Cost after iteration 2: 0.598855
+Cost after iteration 3: 0.595347
+Cost after iteration 4: 0.591877
+Cost after iteration 5: 0.588444
+Cost after iteration 6: 0.585047
+Cost after iteration 7: 0.581686
+Cost after iteration 8: 0.578359
+Cost after iteration 9: 0.575067
+Cost after iteration 10: 0.571807
+Cost after iteration 11: 0.568581
+Cost after iteration 12: 0.565387
+Cost after iteration 13: 0.562225
+Cost after iteration 14: 0.559094
+Cost after iteration 15: 0.555995
+Cost after iteration 16: 0.552925
+Cost after iteration 17: 0.549885
+Cost after iteration 18: 0.546875
+Cost after iteration 19: 0.543894
+Cost after iteration 20: 0.540942
+Cost after iteration 21: 0.538018
+Cost after iteration 22: 0.535121
+Cost after iteration 23: 0.532252
+Cost after iteration 24: 0.529411
+Cost after iteration 25: 0.526596
+Cost after iteration 26: 0.523807
+Cost after iteration 27: 0.521045
+Cost after iteration 28: 0.518309
+Cost after iteration 29: 0.515598
+Cost after iteration 30: 0.512912
+Cost after iteration 31: 0.510251
+Cost after iteration 32: 0.507615
+Cost after iteration 33: 0.505002
+Cost after iteration 34: 0.502414
+Cost after iteration 35: 0.499850
+Cost after iteration 36: 0.497309
+Cost after iteration 37: 0.494791
+Cost after iteration 38: 0.492297
+Cost after iteration 39: 0.489825
+Cost after iteration 40: 0.487375
+Cost after iteration 41: 0.484947
+Cost after iteration 42: 0.482542
+Cost after iteration 43: 0.480158
+Cost after iteration 44: 0.477795
+Cost after iteration 45: 0.475454
+Cost after iteration 46: 0.473134
+Cost after iteration 47: 0.470834
+Cost after iteration 48: 0.468555
+Cost after iteration 49: 0.466296
+Cost after iteration 50: 0.464057
+Cost after iteration 51: 0.461838
+Cost after iteration 52: 0.459639
+Cost after iteration 53: 0.457459
+Cost after iteration 54: 0.455299
+Cost after iteration 55: 0.453157
+Cost after iteration 56: 0.451034
+Cost after iteration 57: 0.448930
+Cost after iteration 58: 0.446844
+Cost after iteration 59: 0.444776
+Cost after iteration 60: 0.442727
+Cost after iteration 61: 0.440695
+Cost after iteration 62: 0.438681
+Cost after iteration 63: 0.436684
+Cost after iteration 64: 0.434705
+Cost after iteration 65: 0.432742
+Cost after iteration 66: 0.430796
+Cost after iteration 67: 0.428868
+Cost after iteration 68: 0.426955
+Cost after iteration 69: 0.425059
+Cost after iteration 70: 0.423179
+Cost after iteration 71: 0.421316
+Cost after iteration 72: 0.419467
+Cost after iteration 73: 0.417635
+Cost after iteration 74: 0.415818
+Cost after iteration 75: 0.414017
+Cost after iteration 76: 0.412230
+Cost after iteration 77: 0.410459
+Cost after iteration 78: 0.408702
+Cost after iteration 79: 0.406961
+Cost after iteration 80: 0.405233
+Cost after iteration 81: 0.403520
+Cost after iteration 82: 0.401822
+Cost after iteration 83: 0.400137
+Cost after iteration 84: 0.398466
+Cost after iteration 85: 0.396809
+Cost after iteration 86: 0.395166
+Cost after iteration 87: 0.393536
+Cost after iteration 88: 0.391920
+Cost after iteration 89: 0.390316
+Cost after iteration 90: 0.388726
+Cost after iteration 91: 0.387149
+Cost after iteration 92: 0.385585
+Cost after iteration 93: 0.384033
+Cost after iteration 94: 0.382493
+Cost after iteration 95: 0.380966
+Cost after iteration 96: 0.379452
+Cost after iteration 97: 0.377949
+Cost after iteration 98: 0.376459
+Cost after iteration 99: 0.374980
+Cost after iteration 100: 0.373513
+Cost after iteration 101: 0.372058
+Cost after iteration 102: 0.370614
+Cost after iteration 103: 0.369182
+Cost after iteration 104: 0.367761
+Cost after iteration 105: 0.366351
+Cost after iteration 106: 0.364952
+Cost after iteration 107: 0.363564
+Cost after iteration 108: 0.362187
+Cost after iteration 109: 0.360821
+Cost after iteration 110: 0.359465
+Cost after iteration 111: 0.358120
+Cost after iteration 112: 0.356785
+Cost after iteration 113: 0.355460
+Cost after iteration 114: 0.354145
+Cost after iteration 115: 0.352841
+Cost after iteration 116: 0.351546
+Cost after iteration 117: 0.350262
+Cost after iteration 118: 0.348987
+Cost after iteration 119: 0.347722
+Cost after iteration 120: 0.346466
+Cost after iteration 121: 0.345220
+Cost after iteration 122: 0.343983
+Cost after iteration 123: 0.342755
+Cost after iteration 124: 0.341537
+Cost after iteration 125: 0.340327
+Cost after iteration 126: 0.339127
+Cost after iteration 127: 0.337936
+Cost after iteration 128: 0.336753
+Cost after iteration 129: 0.335579
+Cost after iteration 130: 0.334414
+Cost after iteration 131: 0.333257
+Cost after iteration 132: 0.332109
+Cost after iteration 133: 0.330969
+Cost after iteration 134: 0.329837
+Cost after iteration 135: 0.328714
+Cost after iteration 136: 0.327598
+Cost after iteration 137: 0.326491
+Cost after iteration 138: 0.325392
+Cost after iteration 139: 0.324300
+Cost after iteration 140: 0.323217
+Cost after iteration 141: 0.322141
+Cost after iteration 142: 0.321073
+Cost after iteration 143: 0.320012
+Cost after iteration 144: 0.318959
+Cost after iteration 145: 0.317913
+Cost after iteration 146: 0.316875
+Cost after iteration 147: 0.315844
+Cost after iteration 148: 0.314820
+Cost after iteration 149: 0.313804
+Cost after iteration 150: 0.312794
+Cost after iteration 151: 0.311792
+Cost after iteration 152: 0.310796
+Cost after iteration 153: 0.309807
+Cost after iteration 154: 0.308825
+Cost after iteration 155: 0.307850
+Cost after iteration 156: 0.306882
+Cost after iteration 157: 0.305920
+Cost after iteration 158: 0.304965
+Cost after iteration 159: 0.304016
+Cost after iteration 160: 0.303073
+Cost after iteration 161: 0.302137
+Cost after iteration 162: 0.301208
+Cost after iteration 163: 0.300284
+Cost after iteration 164: 0.299367
+Cost after iteration 165: 0.298456
+Cost after iteration 166: 0.297551
+Cost after iteration 167: 0.296652
+Cost after iteration 168: 0.295759
+Cost after iteration 169: 0.294872
+Cost after iteration 170: 0.293990
+Cost after iteration 171: 0.293115
+Cost after iteration 172: 0.292245
+Cost after iteration 173: 0.291381
+Cost after iteration 174: 0.290522
+Cost after iteration 175: 0.289670
+Cost after iteration 176: 0.288822
+Cost after iteration 177: 0.287980
+Cost after iteration 178: 0.287144
+Cost after iteration 179: 0.286313
+Cost after iteration 180: 0.285487
+Cost after iteration 181: 0.284667
+Cost after iteration 182: 0.283852
+Cost after iteration 183: 0.283042
+Cost after iteration 184: 0.282237
+Cost after iteration 185: 0.281437
+Cost after iteration 186: 0.280643
+Cost after iteration 187: 0.279853
+Cost after iteration 188: 0.279068
+Cost after iteration 189: 0.278288
+Cost after iteration 190: 0.277513
+Cost after iteration 191: 0.276743
+Cost after iteration 192: 0.275978
+Cost after iteration 193: 0.275218
+Cost after iteration 194: 0.274462
+Cost after iteration 195: 0.273710
+Cost after iteration 196: 0.272964
+Cost after iteration 197: 0.272222
+Cost after iteration 198: 0.271484
+Cost after iteration 199: 0.270752
+Cost after iteration 200: 0.270023
+Cost after iteration 201: 0.269299
+Cost after iteration 202: 0.268579
+Cost after iteration 203: 0.267864
+Cost after iteration 204: 0.267153
+Cost after iteration 205: 0.266446
+Cost after iteration 206: 0.265744
+Cost after iteration 207: 0.265045
+Cost after iteration 208: 0.264351
+Cost after iteration 209: 0.263661
+Cost after iteration 210: 0.262975
+Cost after iteration 211: 0.262293
+Cost after iteration 212: 0.261615
+Cost after iteration 213: 0.260941
+Cost after iteration 214: 0.260271
+Cost after iteration 215: 0.259605
+Cost after iteration 216: 0.258943
+Cost after iteration 217: 0.258285
+Cost after iteration 218: 0.257630
+Cost after iteration 219: 0.256980
+Cost after iteration 220: 0.256333
+Cost after iteration 221: 0.255689
+Cost after iteration 222: 0.255050
+Cost after iteration 223: 0.254414
+Cost after iteration 224: 0.253782
+Cost after iteration 225: 0.253153
+Cost after iteration 226: 0.252528
+Cost after iteration 227: 0.251907
+Cost after iteration 228: 0.251289
+Cost after iteration 229: 0.250674
+Cost after iteration 230: 0.250063
+Cost after iteration 231: 0.249455
+Cost after iteration 232: 0.248851
+Cost after iteration 233: 0.248250
+Cost after iteration 234: 0.247653
+Cost after iteration 235: 0.247059
+Cost after iteration 236: 0.246468
+Cost after iteration 237: 0.245880
+Cost after iteration 238: 0.245296
+Cost after iteration 239: 0.244714
+Cost after iteration 240: 0.244136
+Cost after iteration 241: 0.243562
+Cost after iteration 242: 0.242990
+Cost after iteration 243: 0.242421
+Cost after iteration 244: 0.241856
+Cost after iteration 245: 0.241293
+Cost after iteration 246: 0.240734
+Cost after iteration 247: 0.240178
+Cost after iteration 248: 0.239624
+Cost after iteration 249: 0.239074
+Cost after iteration 250: 0.238526
+Cost after iteration 251: 0.237982
+Cost after iteration 252: 0.237440
+Cost after iteration 253: 0.236901
+Cost after iteration 254: 0.236365
+Cost after iteration 255: 0.235832
+Cost after iteration 256: 0.235302
+Cost after iteration 257: 0.234774
+Cost after iteration 258: 0.234250
+Cost after iteration 259: 0.233728
+Cost after iteration 260: 0.233208
+Cost after iteration 261: 0.232692
+Cost after iteration 262: 0.232178
+Cost after iteration 263: 0.231667
+Cost after iteration 264: 0.231158
+Cost after iteration 265: 0.230652
+Cost after iteration 266: 0.230149
+Cost after iteration 267: 0.229648
+Cost after iteration 268: 0.229150
+Cost after iteration 269: 0.228654
+Cost after iteration 270: 0.228161
+Cost after iteration 271: 0.227670
+Cost after iteration 272: 0.227182
+Cost after iteration 273: 0.226696
+Cost after iteration 274: 0.226213
+Cost after iteration 275: 0.225732
+Cost after iteration 276: 0.225254
+Cost after iteration 277: 0.224778
+Cost after iteration 278: 0.224304
+Cost after iteration 279: 0.223833
+Cost after iteration 280: 0.223364
+Cost after iteration 281: 0.222897
+Cost after iteration 282: 0.222433
+Cost after iteration 283: 0.221971
+Cost after iteration 284: 0.221511
+Cost after iteration 285: 0.221054
+Cost after iteration 286: 0.220598
+Cost after iteration 287: 0.220145
+Cost after iteration 288: 0.219695
+Cost after iteration 289: 0.219246
+Cost after iteration 290: 0.218799
+Cost after iteration 291: 0.218355
+Cost after iteration 292: 0.217913
+Cost after iteration 293: 0.217473
+Cost after iteration 294: 0.217035
+Cost after iteration 295: 0.216599
+Cost after iteration 296: 0.216166
+Cost after iteration 297: 0.215734
+Cost after iteration 298: 0.215304
+Cost after iteration 299: 0.214877
+Cost after iteration 300: 0.214451
+Cost after iteration 301: 0.214028
+Cost after iteration 302: 0.213606
+Cost after iteration 303: 0.213187
+Cost after iteration 304: 0.212769
+Cost after iteration 305: 0.212354
+Cost after iteration 306: 0.211940
+Cost after iteration 307: 0.211528
+Cost after iteration 308: 0.211119
+Cost after iteration 309: 0.210711
+Cost after iteration 310: 0.210305
+Cost after iteration 311: 0.209901
+Cost after iteration 312: 0.209498
+Cost after iteration 313: 0.209098
+Cost after iteration 314: 0.208699
+Cost after iteration 315: 0.208303
+Cost after iteration 316: 0.207908
+Cost after iteration 317: 0.207515
+Cost after iteration 318: 0.207123
+Cost after iteration 319: 0.206734
+Cost after iteration 320: 0.206346
+Cost after iteration 321: 0.205960
+Cost after iteration 322: 0.205575
+Cost after iteration 323: 0.205193
+Cost after iteration 324: 0.204812
+Cost after iteration 325: 0.204433
+Cost after iteration 326: 0.204055
+Cost after iteration 327: 0.203680
+Cost after iteration 328: 0.203306
+Cost after iteration 329: 0.202933
+Cost after iteration 330: 0.202562
+Cost after iteration 331: 0.202193
+Cost after iteration 332: 0.201826
+Cost after iteration 333: 0.201460
+Cost after iteration 334: 0.201095
+Cost after iteration 335: 0.200733
+Cost after iteration 336: 0.200372
+Cost after iteration 337: 0.200012
+Cost after iteration 338: 0.199654
+Cost after iteration 339: 0.199298
+Cost after iteration 340: 0.198943
+Cost after iteration 341: 0.198590
+Cost after iteration 342: 0.198238
+Cost after iteration 343: 0.197887
+Cost after iteration 344: 0.197539
+Cost after iteration 345: 0.197191
+Cost after iteration 346: 0.196846
+Cost after iteration 347: 0.196501
+Cost after iteration 348: 0.196158
+Cost after iteration 349: 0.195817
+Cost after iteration 350: 0.195477
+Cost after iteration 351: 0.195138
+Cost after iteration 352: 0.194801
+Cost after iteration 353: 0.194466
+Cost after iteration 354: 0.194131
+Cost after iteration 355: 0.193799
+Cost after iteration 356: 0.193467
+Cost after iteration 357: 0.193137
+Cost after iteration 358: 0.192808
+Cost after iteration 359: 0.192481
+Cost after iteration 360: 0.192155
+Cost after iteration 361: 0.191830
+Cost after iteration 362: 0.191507
+Cost after iteration 363: 0.191185
+Cost after iteration 364: 0.190865
+Cost after iteration 365: 0.190545
+Cost after iteration 366: 0.190227
+Cost after iteration 367: 0.189911
+Cost after iteration 368: 0.189595
+Cost after iteration 369: 0.189281
+Cost after iteration 370: 0.188968
+Cost after iteration 371: 0.188657
+Cost after iteration 372: 0.188346
+Cost after iteration 373: 0.188037
+Cost after iteration 374: 0.187730
+Cost after iteration 375: 0.187423
+Cost after iteration 376: 0.187118
+Cost after iteration 377: 0.186814
+Cost after iteration 378: 0.186511
+Cost after iteration 379: 0.186209
+Cost after iteration 380: 0.185909
+Cost after iteration 381: 0.185609
+Cost after iteration 382: 0.185311
+Cost after iteration 383: 0.185014
+Cost after iteration 384: 0.184719
+Cost after iteration 385: 0.184424
+Cost after iteration 386: 0.184131
+Cost after iteration 387: 0.183839
+Cost after iteration 388: 0.183547
+Cost after iteration 389: 0.183257
+Cost after iteration 390: 0.182969
+Cost after iteration 391: 0.182681
+Cost after iteration 392: 0.182394
+Cost after iteration 393: 0.182109
+Cost after iteration 394: 0.181824
+Cost after iteration 395: 0.181541
+Cost after iteration 396: 0.181259
+Cost after iteration 397: 0.180978
+Cost after iteration 398: 0.180698
+Cost after iteration 399: 0.180419
+Cost after iteration 400: 0.180141
+Cost after iteration 401: 0.179864
+Cost after iteration 402: 0.179589
+Cost after iteration 403: 0.179314
+Cost after iteration 404: 0.179040
+Cost after iteration 405: 0.178768
+Cost after iteration 406: 0.178496
+Cost after iteration 407: 0.178226
+Cost after iteration 408: 0.177956
+Cost after iteration 409: 0.177688
+Cost after iteration 410: 0.177420
+Cost after iteration 411: 0.177153
+Cost after iteration 412: 0.176888
+Cost after iteration 413: 0.176623
+Cost after iteration 414: 0.176360
+Cost after iteration 415: 0.176097
+Cost after iteration 416: 0.175836
+Cost after iteration 417: 0.175575
+Cost after iteration 418: 0.175316
+Cost after iteration 419: 0.175057
+Cost after iteration 420: 0.174799
+Cost after iteration 421: 0.174542
+Cost after iteration 422: 0.174286
+Cost after iteration 423: 0.174032
+Cost after iteration 424: 0.173778
+Cost after iteration 425: 0.173525
+Cost after iteration 426: 0.173272
+Cost after iteration 427: 0.173021
+Cost after iteration 428: 0.172771
+Cost after iteration 429: 0.172522
+Cost after iteration 430: 0.172273
+Cost after iteration 431: 0.172025
+Cost after iteration 432: 0.171779
+Cost after iteration 433: 0.171533
+Cost after iteration 434: 0.171288
+Cost after iteration 435: 0.171044
+Cost after iteration 436: 0.170801
+Cost after iteration 437: 0.170558
+Cost after iteration 438: 0.170317
+Cost after iteration 439: 0.170076
+Cost after iteration 440: 0.169837
+Cost after iteration 441: 0.169598
+Cost after iteration 442: 0.169360
+Cost after iteration 443: 0.169123
+Cost after iteration 444: 0.168886
+Cost after iteration 445: 0.168651
+Cost after iteration 446: 0.168416
+Cost after iteration 447: 0.168182
+Cost after iteration 448: 0.167949
+Cost after iteration 449: 0.167717
+Cost after iteration 450: 0.167485
+Cost after iteration 451: 0.167255
+Cost after iteration 452: 0.167025
+Cost after iteration 453: 0.166796
+Cost after iteration 454: 0.166567
+Cost after iteration 455: 0.166340
+Cost after iteration 456: 0.166113
+Cost after iteration 457: 0.165887
+Cost after iteration 458: 0.165662
+Cost after iteration 459: 0.165438
+Cost after iteration 460: 0.165214
+Cost after iteration 461: 0.164991
+Cost after iteration 462: 0.164769
+Cost after iteration 463: 0.164548
+Cost after iteration 464: 0.164327
+Cost after iteration 465: 0.164108
+Cost after iteration 466: 0.163889
+Cost after iteration 467: 0.163670
+Cost after iteration 468: 0.163453
+Cost after iteration 469: 0.163236
+Cost after iteration 470: 0.163020
+Cost after iteration 471: 0.162804
+Cost after iteration 472: 0.162590
+Cost after iteration 473: 0.162376
+Cost after iteration 474: 0.162162
+Cost after iteration 475: 0.161950
+Cost after iteration 476: 0.161738
+Cost after iteration 477: 0.161527
+Cost after iteration 478: 0.161316
+Cost after iteration 479: 0.161107
+Cost after iteration 480: 0.160898
+Cost after iteration 481: 0.160689
+Cost after iteration 482: 0.160482
+Cost after iteration 483: 0.160275
+Cost after iteration 484: 0.160068
+Cost after iteration 485: 0.159863
+Cost after iteration 486: 0.159658
+Cost after iteration 487: 0.159453
+Cost after iteration 488: 0.159250
+Cost after iteration 489: 0.159047
+Cost after iteration 490: 0.158845
+Cost after iteration 491: 0.158643
+Cost after iteration 492: 0.158442
+Cost after iteration 493: 0.158242
+Cost after iteration 494: 0.158042
+Cost after iteration 495: 0.157843
+Cost after iteration 496: 0.157644
+Cost after iteration 497: 0.157447
+Cost after iteration 498: 0.157249
+Cost after iteration 499: 0.157053
+Cost after iteration 500: 0.156857
+Cost after iteration 501: 0.156662
+Cost after iteration 502: 0.156467
+Cost after iteration 503: 0.156273
+Cost after iteration 504: 0.156080
+Cost after iteration 505: 0.155887
+Cost after iteration 506: 0.155695
+Cost after iteration 507: 0.155503
+Cost after iteration 508: 0.155312
+Cost after iteration 509: 0.155122
+Cost after iteration 510: 0.154932
+Cost after iteration 511: 0.154743
+Cost after iteration 512: 0.154554
+Cost after iteration 513: 0.154366
+Cost after iteration 514: 0.154179
+Cost after iteration 515: 0.153992
+Cost after iteration 516: 0.153806
+Cost after iteration 517: 0.153620
+Cost after iteration 518: 0.153435
+Cost after iteration 519: 0.153250
+Cost after iteration 520: 0.153066
+Cost after iteration 521: 0.152883
+Cost after iteration 522: 0.152700
+Cost after iteration 523: 0.152518
+Cost after iteration 524: 0.152336
+Cost after iteration 525: 0.152155
+Cost after iteration 526: 0.151974
+Cost after iteration 527: 0.151794
+Cost after iteration 528: 0.151615
+Cost after iteration 529: 0.151436
+Cost after iteration 530: 0.151257
+Cost after iteration 531: 0.151079
+Cost after iteration 532: 0.150902
+Cost after iteration 533: 0.150725
+Cost after iteration 534: 0.150549
+Cost after iteration 535: 0.150373
+Cost after iteration 536: 0.150198
+Cost after iteration 537: 0.150023
+Cost after iteration 538: 0.149849
+Cost after iteration 539: 0.149676
+Cost after iteration 540: 0.149502
+Cost after iteration 541: 0.149330
+Cost after iteration 542: 0.149158
+Cost after iteration 543: 0.148986
+Cost after iteration 544: 0.148815
+Cost after iteration 545: 0.148644
+Cost after iteration 546: 0.148474
+Cost after iteration 547: 0.148305
+Cost after iteration 548: 0.148136
+Cost after iteration 549: 0.147967
+Cost after iteration 550: 0.147799
+Cost after iteration 551: 0.147632
+Cost after iteration 552: 0.147465
+Cost after iteration 553: 0.147298
+Cost after iteration 554: 0.147132
+Cost after iteration 555: 0.146966
+Cost after iteration 556: 0.146801
+Cost after iteration 557: 0.146636
+Cost after iteration 558: 0.146472
+Cost after iteration 559: 0.146309
+Cost after iteration 560: 0.146145
+Cost after iteration 561: 0.145983
+Cost after iteration 562: 0.145820
+Cost after iteration 563: 0.145658
+Cost after iteration 564: 0.145497
+Cost after iteration 565: 0.145336
+Cost after iteration 566: 0.145176
+Cost after iteration 567: 0.145016
+Cost after iteration 568: 0.144856
+Cost after iteration 569: 0.144697
+Cost after iteration 570: 0.144539
+Cost after iteration 571: 0.144380
+Cost after iteration 572: 0.144223
+Cost after iteration 573: 0.144066
+Cost after iteration 574: 0.143909
+Cost after iteration 575: 0.143752
+Cost after iteration 576: 0.143596
+Cost after iteration 577: 0.143441
+Cost after iteration 578: 0.143286
+Cost after iteration 579: 0.143131
+Cost after iteration 580: 0.142977
+Cost after iteration 581: 0.142823
+Cost after iteration 582: 0.142670
+Cost after iteration 583: 0.142517
+Cost after iteration 584: 0.142365
+Cost after iteration 585: 0.142213
+Cost after iteration 586: 0.142061
+Cost after iteration 587: 0.141910
+Cost after iteration 588: 0.141759
+Cost after iteration 589: 0.141609
+Cost after iteration 590: 0.141459
+Cost after iteration 591: 0.141309
+Cost after iteration 592: 0.141160
+Cost after iteration 593: 0.141011
+Cost after iteration 594: 0.140863
+Cost after iteration 595: 0.140715
+Cost after iteration 596: 0.140568
+Cost after iteration 597: 0.140421
+Cost after iteration 598: 0.140274
+Cost after iteration 599: 0.140128
+W = [[0.49908216 0.51641999]]
+b = [[-4.69274864]]</code></pre>
+</div>
+</div>
+<p>Plot the decision boundary:</p>
+<div id="cell-42" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>plot_decision_boundary(X_larger, Y_larger, parameters_larger)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="classification_with_single_perceptron_files/figure-html/cell-18-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
